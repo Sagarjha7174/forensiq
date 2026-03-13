@@ -9,7 +9,20 @@ const dbName = process.env.DB_NAME || process.env.DB_DATABASE || 'forensiq_db';
 const dbTestName = process.env.DB_NAME_TEST || 'forensiq_db_test';
 const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
 const rawDatabaseUrl = process.env.DATABASE_URL_POOLER || process.env.DATABASE_URL;
-const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
+const normalizeDatabaseUrl = (url) => {
+  if (!url) return undefined;
+  const normalized = url.replace(/^postgresql:\/\//i, 'postgres://');
+
+  if (process.env.DB_SSL_REJECT_UNAUTHORIZED === 'false') {
+    if (/sslmode=/i.test(normalized)) {
+      return normalized.replace(/sslmode=[^&]*/i, 'sslmode=no-verify');
+    }
+    return `${normalized}${normalized.includes('?') ? '&' : '?'}sslmode=no-verify`;
+  }
+
+  return normalized;
+};
+const databaseUrl = normalizeDatabaseUrl(rawDatabaseUrl);
 if (databaseUrl) {
   process.env.DATABASE_URL = databaseUrl;
 }
