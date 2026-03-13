@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, ArrowRight, Github, Linkedin } from 'lucide-react';
+import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import AnimatedCard from './ui/AnimatedCard';
@@ -52,7 +53,15 @@ function TeamSlider() {
         </button>
       </div>
       <Swiper
+        modules={[Autoplay]}
         onSwiper={setSwiper}
+        loop={team.length > 3}
+        speed={750}
+        autoplay={{
+          delay: 2600,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true
+        }}
         spaceBetween={20}
         slidesPerView={1.05}
         breakpoints={{

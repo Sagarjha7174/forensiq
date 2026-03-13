@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, BookOpen, Microscope, Orbit, School, Sparkles, Users } from 'lucide-react';
+import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import SectionHeader from '../components/SectionHeader';
@@ -242,7 +243,15 @@ function LandingPage() {
             </div>
           ) : (
             <Swiper
+              modules={[Autoplay]}
               onSwiper={setCourseSwiper}
+              loop={courses.length > 3}
+              speed={700}
+              autoplay={{
+                delay: 2800,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+              }}
               spaceBetween={24}
               slidesPerView={1.08}
               breakpoints={{
