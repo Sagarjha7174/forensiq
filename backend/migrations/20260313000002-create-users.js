@@ -17,8 +17,8 @@ module.exports = {
         onDelete: 'RESTRICT'
       },
       role: { type: Sequelize.ENUM('student', 'admin'), allowNull: false, defaultValue: 'student' },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
   },
   async down(queryInterface) {

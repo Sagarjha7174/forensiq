@@ -13,8 +13,8 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       timer_minutes: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 30 },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
   },
   async down(queryInterface) {

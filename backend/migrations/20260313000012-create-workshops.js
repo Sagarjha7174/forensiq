@@ -8,8 +8,8 @@ module.exports = {
       description: { type: Sequelize.TEXT, allowNull: false },
       image: { type: Sequelize.STRING, allowNull: true },
       date: { type: Sequelize.DATE, allowNull: false },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
   },
   async down(queryInterface) {

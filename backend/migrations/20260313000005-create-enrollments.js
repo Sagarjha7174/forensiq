@@ -26,8 +26,8 @@ module.exports = {
       },
       razorpay_order_id: { type: Sequelize.STRING, allowNull: true },
       razorpay_payment_id: { type: Sequelize.STRING, allowNull: true },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
     await queryInterface.addIndex('enrollments', ['user_id', 'course_id'], { unique: true });
   },

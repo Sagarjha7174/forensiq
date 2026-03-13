@@ -19,8 +19,8 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       completed: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
     await queryInterface.addIndex('lecture_progress', ['user_id', 'resource_id'], { unique: true });
   },

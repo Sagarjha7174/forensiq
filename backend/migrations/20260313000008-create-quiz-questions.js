@@ -14,8 +14,8 @@ module.exports = {
       question: { type: Sequelize.TEXT, allowNull: false },
       options_json: { type: Sequelize.JSON, allowNull: false },
       correct_option: { type: Sequelize.STRING, allowNull: false },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
   },
   async down(queryInterface) {

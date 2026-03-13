@@ -1,7 +1,13 @@
 require('dotenv').config();
 
+const dbDialect = process.env.DB_DIALECT || 'postgres';
 const dbHost = process.env.DB_HOST || '';
-const shouldUseSSL = process.env.DB_SSL === 'true' || dbHost.includes('tidbcloud.com');
+const dbUser = process.env.DB_USER || process.env.DB_USERNAME || 'postgres';
+const dbPassword = process.env.DB_PASSWORD || null;
+const dbName = process.env.DB_NAME || process.env.DB_DATABASE || 'forensiq_db';
+const dbTestName = process.env.DB_NAME_TEST || 'forensiq_db_test';
+const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
+const shouldUseSSL = process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production';
 const dialectOptions = shouldUseSSL
   ? {
       ssl: {
@@ -13,32 +19,35 @@ const dialectOptions = shouldUseSSL
 
 module.exports = {
   development: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME || 'foresiq_db',
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: Number(process.env.DB_PORT || 3306),
-    dialect: 'mysql',
+    use_env_variable: process.env.DATABASE_URL ? 'DATABASE_URL' : undefined,
+    username: dbUser,
+    password: dbPassword,
+    database: dbName,
+    host: dbHost || '127.0.0.1',
+    port: dbPort,
+    dialect: dbDialect,
     logging: false,
     ...(dialectOptions ? { dialectOptions } : {})
   },
   test: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME_TEST || 'foresiq_db_test',
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: Number(process.env.DB_PORT || 3306),
-    dialect: 'mysql',
+    use_env_variable: process.env.DATABASE_URL ? 'DATABASE_URL' : undefined,
+    username: dbUser,
+    password: dbPassword,
+    database: dbTestName,
+    host: dbHost || '127.0.0.1',
+    port: dbPort,
+    dialect: dbDialect,
     logging: false,
     ...(dialectOptions ? { dialectOptions } : {})
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT || 3306),
-    dialect: 'mysql',
+    use_env_variable: process.env.DATABASE_URL ? 'DATABASE_URL' : undefined,
+    username: dbUser,
+    password: dbPassword,
+    database: dbName,
+    host: dbHost,
+    port: dbPort,
+    dialect: dbDialect,
     logging: false,
     ...(dialectOptions ? { dialectOptions } : {})
   }

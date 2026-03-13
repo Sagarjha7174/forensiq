@@ -8,8 +8,8 @@ module.exports = {
       message: { type: Sequelize.TEXT, allowNull: false },
       class_id: { type: Sequelize.INTEGER, allowNull: true },
       course_id: { type: Sequelize.INTEGER, allowNull: true },
-      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') }
+      createdAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+      updatedAt: { type: Sequelize.DATE, allowNull: false, defaultValue: Sequelize.NOW }
     });
   },
   async down(queryInterface) {
