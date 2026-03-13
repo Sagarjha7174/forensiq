@@ -7,7 +7,10 @@ const dbUser = process.env.DB_USER || process.env.DB_USERNAME;
 const dbPassword = process.env.DB_PASSWORD;
 const dbName = process.env.DB_NAME || process.env.DB_DATABASE;
 const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
-const shouldUseSSL = process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production';
+const rawDatabaseUrl = process.env.DATABASE_URL;
+const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
+const shouldUseSSL =
+  process.env.DB_SSL === 'true' || Boolean(databaseUrl) || process.env.NODE_ENV === 'production';
 
 const sslConfig = shouldUseSSL
   ? {
@@ -27,8 +30,8 @@ const options = {
   }
 };
 
-const sequelize = process.env.DATABASE_URL
-  ? new Sequelize(process.env.DATABASE_URL, options)
+const sequelize = databaseUrl
+  ? new Sequelize(databaseUrl, options)
   : new Sequelize(dbName, dbUser, dbPassword, options);
 
 module.exports = sequelize;

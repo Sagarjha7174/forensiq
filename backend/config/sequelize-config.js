@@ -7,7 +7,13 @@ const dbPassword = process.env.DB_PASSWORD || null;
 const dbName = process.env.DB_NAME || process.env.DB_DATABASE || 'forensiq_db';
 const dbTestName = process.env.DB_NAME_TEST || 'forensiq_db_test';
 const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
-const shouldUseSSL = process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production';
+const rawDatabaseUrl = process.env.DATABASE_URL;
+const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
+if (databaseUrl) {
+  process.env.DATABASE_URL = databaseUrl;
+}
+const shouldUseSSL =
+  process.env.DB_SSL === 'true' || Boolean(databaseUrl) || process.env.NODE_ENV === 'production';
 const dialectOptions = shouldUseSSL
   ? {
       ssl: {
@@ -19,7 +25,7 @@ const dialectOptions = shouldUseSSL
 
 module.exports = {
   development: {
-    use_env_variable: process.env.DATABASE_URL ? 'DATABASE_URL' : undefined,
+    use_env_variable: databaseUrl ? 'DATABASE_URL' : undefined,
     username: dbUser,
     password: dbPassword,
     database: dbName,
@@ -30,7 +36,7 @@ module.exports = {
     ...(dialectOptions ? { dialectOptions } : {})
   },
   test: {
-    use_env_variable: process.env.DATABASE_URL ? 'DATABASE_URL' : undefined,
+    use_env_variable: databaseUrl ? 'DATABASE_URL' : undefined,
     username: dbUser,
     password: dbPassword,
     database: dbTestName,
@@ -41,7 +47,7 @@ module.exports = {
     ...(dialectOptions ? { dialectOptions } : {})
   },
   production: {
-    use_env_variable: process.env.DATABASE_URL ? 'DATABASE_URL' : undefined,
+    use_env_variable: databaseUrl ? 'DATABASE_URL' : undefined,
     username: dbUser,
     password: dbPassword,
     database: dbName,
