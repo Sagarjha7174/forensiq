@@ -8,7 +8,7 @@ const dbPassword = process.env.DB_PASSWORD || null;
 const dbName = process.env.DB_NAME || process.env.DB_DATABASE || 'forensiq_db';
 const dbTestName = process.env.DB_NAME_TEST || 'forensiq_db_test';
 const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
-const rawDatabaseUrl = process.env.DATABASE_URL;
+const rawDatabaseUrl = process.env.DATABASE_URL_POOLER || process.env.DATABASE_URL;
 const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
 if (databaseUrl) {
   process.env.DATABASE_URL = databaseUrl;

@@ -8,7 +8,7 @@ const dbUser = process.env.DB_USER || process.env.DB_USERNAME;
 const dbPassword = process.env.DB_PASSWORD;
 const dbName = process.env.DB_NAME || process.env.DB_DATABASE;
 const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
-const rawDatabaseUrl = process.env.DATABASE_URL;
+const rawDatabaseUrl = process.env.DATABASE_URL_POOLER || process.env.DATABASE_URL;
 const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
 const forceIpv4 = process.env.DB_FORCE_IPV4 !== 'false';
 if (forceIpv4) {
