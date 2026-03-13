@@ -47,29 +47,26 @@ function LoginPage() {
   };
 
   return (
-    <section className="relative -mx-4 -mb-10 flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden px-4 py-12 md:-mx-6 md:px-6">
-      <div className="auth-blob auth-blob-1" />
-      <div className="auth-blob auth-blob-2" />
-      <div className="auth-blob auth-blob-3" />
+    <section className="-mx-4 -mb-10 flex min-h-[calc(100vh-5rem)] items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-12 dark:from-slate-900 dark:to-slate-950 md:-mx-6 md:px-6">
 
       <motion.div
-        initial={{ opacity: 0, y: 28 }}
+        initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="overflow-hidden rounded-2xl border border-indigo-100/70 bg-white/80 p-8 shadow-[0_20px_60px_rgba(99,102,241,0.15),0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/75 dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-8 shadow-card dark:border-slate-700 dark:bg-slate-800">
           <div className="mb-7 text-center">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.08, duration: 0.4 }}
-              className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30"
+              className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-600"
             >
               <ShieldCheck size={24} className="text-white" />
             </motion.div>
             <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">Welcome Back</h1>
-            <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">Sign in to continue your learning journey</p>
+            <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-300">Sign in to continue your learning journey</p>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -95,7 +92,7 @@ function LoginPage() {
             />
 
             <div className="flex items-center justify-between">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-500 dark:text-slate-300">
                 <input type="checkbox" name="remember" checked={form.remember} onChange={handleChange} className="accent-indigo-600" />
                 Remember me
               </label>
@@ -104,7 +101,7 @@ function LoginPage() {
               </button>
             </div>
 
-            <AnimatedButton type="submit" loading={loading} variant="accent" className="w-full py-3 text-base">
+            <AnimatedButton type="submit" loading={loading} variant="primary" className="w-full py-3 text-base">
               {loading ? 'Signing In…' : 'Sign In'}
             </AnimatedButton>
           </form>

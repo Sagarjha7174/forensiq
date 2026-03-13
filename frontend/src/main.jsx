@@ -16,16 +16,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           toastOptions={{
             duration: 2800,
             style: {
-              borderRadius: '14px',
-              background: 'rgba(255,255,255,0.88)',
-              color: '#0f2744',
-              border: '1px solid rgba(255,255,255,0.55)',
-              backdropFilter: 'blur(12px)'
+              borderRadius: '10px',
+              background: '#ffffff',
+              color: '#0f172a',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.1)'
             },
             success: {
               iconTheme: {
                 primary: '#0ea5a4',
-                secondary: '#ecfeff'
+                secondary: '#f0fdfa'
               }
             },
             error: {

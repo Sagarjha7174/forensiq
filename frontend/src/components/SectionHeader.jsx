@@ -7,7 +7,7 @@ function SectionHeader({ title, subtitle }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.55, ease: 'easeOut' }}
-      className="mb-8"
+      className="mb-8 max-w-3xl"
     >
       <h2 className="section-title">{title}</h2>
       {subtitle && <p className="section-subtitle">{subtitle}</p>}

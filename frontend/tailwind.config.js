@@ -5,24 +5,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#6366F1',
-        secondary: '#8B5CF6',
-        deep: '#312E81',
-        accent: '#22D3EE',
-        surface: '#0F172A',
-        'surface-dark': '#020617',
-        page: '#f8fafc',
-        ink: '#1E293B',
-        'ink-dark': '#E2E8F0'
+        primary: '#4F46E5',
+        secondary: '#0EA5A4',
+        accent: '#F59E0B',
+        page: '#F8FAFC',
+        surface: '#FFFFFF',
+        'surface-dark': '#1E293B',
+        ink: '#0F172A',
+        'ink-dark': '#FFFFFF'
       },
       fontFamily: {
-        heading: ['Sora', 'sans-serif'],
-        body: ['Manrope', 'sans-serif']
+        heading: ['Merriweather', 'serif'],
+        body: ['Source Sans 3', 'sans-serif']
       },
       boxShadow: {
-        glow: '0 18px 45px rgba(15,23,42,0.18)',
-        'glow-strong': '0 18px 48px rgba(99,102,241,0.28)',
-        'glow-purple': '0 18px 48px rgba(139,92,246,0.28)'
+        card: '0 4px 14px rgba(15, 23, 42, 0.08)',
+        'card-hover': '0 10px 24px rgba(15, 23, 42, 0.12)'
       }
     }
   },

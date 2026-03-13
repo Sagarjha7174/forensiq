@@ -27,7 +27,7 @@ function FloatingInput({
         required={required}
         autoComplete={autoComplete}
         placeholder=" "
-        className={`peer w-full rounded-xl border bg-white/80 px-4 pb-2.5 pt-6 text-sm text-slate-800 shadow-inner outline-none transition-all duration-300 focus:scale-[1.01] focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.2)] dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-400 dark:shadow-none dark:focus:border-indigo-400 ${error ? 'border-rose-400' : 'border-slate-200 dark:border-slate-700'}`}
+        className={`peer w-full rounded-lg border bg-white px-4 pb-2.5 pt-6 text-sm text-slate-900 outline-none transition-colors duration-200 focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.2)] dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400 dark:focus:border-indigo-400 ${error ? 'border-rose-400' : 'border-slate-300 dark:border-slate-700'}`}
       />
       <span
         className={`pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 bg-transparent px-1 text-sm text-slate-400 transition-all duration-300 peer-focus:top-2.5 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-indigo-600 dark:text-slate-500 dark:peer-focus:text-indigo-400 ${active ? 'top-2.5 translate-y-0 text-xs text-indigo-600 dark:text-indigo-400' : ''}`}

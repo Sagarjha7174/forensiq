@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Library,
   LogOut,
-  Sparkles,
   Shield,
   UserCircle
 } from 'lucide-react';
@@ -34,7 +33,6 @@ const sections = [
   { key: 'courses', label: 'Courses', icon: Library },
   { key: 'my-courses', label: 'My Courses', icon: BookOpen },
   { key: 'notifications', label: 'Notifications', icon: Bell },
-  { key: 'resources', label: 'Resources', icon: Shield },
   { key: 'profile', label: 'Profile', icon: UserCircle }
 ];
 
@@ -215,7 +213,7 @@ function DashboardPage() {
           email: profile?.email || '',
           contact: profile?.phone || ''
         },
-        theme: { color: '#6366F1' }
+        theme: { color: '#4F46E5' }
       };
 
       const paymentObject = new window.Razorpay(options);
@@ -266,18 +264,18 @@ function DashboardPage() {
   };
 
   const inputClassName =
-    'input-glow rounded-xl border border-slate-200/80 bg-white/80 px-4 py-3 text-sm text-slate-800 outline-none dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-100';
+    'rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.2)] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100';
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-10 lg:py-16">
+    <section className="mx-auto max-w-7xl px-6 py-8 lg:py-12">
       <div className="grid gap-6 xl:grid-cols-[260px_1fr]">
-        <aside className="glass-card h-fit rounded-[28px] p-5 shadow-glow xl:sticky xl:top-24">
-          <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-slate-800 dark:bg-slate-950/50">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Student Panel</p>
-            <h2 className="mt-3 text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <aside className="glass-card h-fit rounded-xl p-5 xl:sticky xl:top-24">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">Student Panel</p>
+            <h2 className="mt-3 text-xl font-semibold text-slate-900 dark:text-white">
               {profile?.first_name ? `Welcome, ${profile.first_name}` : 'Welcome back'}
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
               Keep learning with cleaner navigation, progress tracking, and quick access to your key sections.
             </p>
           </div>
@@ -290,10 +288,10 @@ function DashboardPage() {
                 <button
                   key={section.key}
                   onClick={() => handleSectionChange(section.key)}
-                  className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${
+                  className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors ${
                     selected
-                      ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-[0_12px_32px_rgba(99,102,241,0.26)]'
-                      : 'bg-white/60 text-slate-700 hover:bg-slate-100 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:bg-slate-900/80'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   <span className="inline-flex items-center gap-3">
@@ -309,7 +307,7 @@ function DashboardPage() {
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200/70 bg-rose-50/80 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/20 dark:hover:bg-rose-950/40"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/20 dark:hover:bg-rose-950/40"
           >
             <LogOut size={16} />
             Logout
@@ -317,17 +315,16 @@ function DashboardPage() {
         </aside>
 
         <div className="space-y-6">
-          <div className="glass-card overflow-hidden rounded-[28px] p-6 md:p-8">
+          <div className="glass-card overflow-hidden rounded-xl p-6 md:p-8">
             <div className="flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-primary dark:bg-primary/15 dark:text-indigo-300">
-                  <Sparkles size={14} />
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   Learning Overview
                 </div>
-                <h1 className="mt-5 font-heading text-4xl font-bold text-slate-900 dark:text-slate-100 md:text-5xl">
-                  Designed for steady progress
+                <h1 className="mt-5 font-heading text-4xl font-bold text-slate-900 dark:text-white md:text-5xl">
+                  Your learning dashboard
                 </h1>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-400 md:text-base">
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-300 md:text-base">
                   Continue learning, discover recommended courses, track lecture completion, and stay on top of workshops from a clearer dashboard layout.
                 </p>
               </div>
@@ -337,9 +334,9 @@ function DashboardPage() {
                   { label: 'Notifications', value: notifications.length },
                   { label: 'Resources', value: resources.length }
                 ].map((item) => (
-                  <div key={item.label} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-slate-800 dark:bg-slate-950/50">
-                    <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{item.value}</p>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.label}</p>
+                  <div key={item.label} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                    <p className="text-2xl font-semibold text-slate-900 dark:text-white">{item.value}</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{item.label}</p>
                   </div>
                 ))}
               </div>
@@ -369,11 +366,11 @@ function DashboardPage() {
                       <AnimatedCard key={item.label} className="p-5">
                         <div className="flex items-center justify-between">
                           <p className="text-sm text-slate-500 dark:text-slate-400">{item.label}</p>
-                          <span className="rounded-xl bg-primary/10 p-2 text-primary dark:bg-primary/15 dark:text-indigo-300">
+                          <span className="rounded-lg bg-indigo-50 p-2 text-indigo-600 dark:bg-slate-700 dark:text-indigo-300">
                             <Icon size={16} />
                           </span>
                         </div>
-                        <p className="mt-4 text-3xl font-bold text-slate-900 dark:text-slate-100">{item.value}</p>
+                        <p className="mt-4 text-3xl font-bold text-slate-900 dark:text-white">{item.value}</p>
                       </AnimatedCard>
                     );
                   })}
@@ -383,17 +380,17 @@ function DashboardPage() {
                   <AnimatedCard className="p-6">
                     <div className="flex items-center justify-between gap-4">
                       <div>
-                        <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Continue Learning</h3>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Progress bars are calculated from completed lecture resources.</p>
+                        <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Continue Learning</h3>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">Progress bars are calculated from completed lecture resources.</p>
                       </div>
                     </div>
                     <div className="mt-6 space-y-4">
                       {learningCards.slice(0, 3).map((entry) => (
-                        <div key={entry.id} className="rounded-2xl border border-slate-200/70 bg-white/65 p-4 dark:border-slate-800 dark:bg-slate-950/45">
+                        <div key={entry.id} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
                           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div>
-                              <h4 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{getCourseTitle(entry.course)}</h4>
-                              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                              <h4 className="text-lg font-semibold text-slate-900 dark:text-white">{getCourseTitle(entry.course)}</h4>
+                              <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">
                                 {entry.completedLectures} of {entry.totalLectures} lectures completed
                               </p>
                             </div>
@@ -402,30 +399,30 @@ function DashboardPage() {
                             </Link>
                           </div>
                           <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                            <div className="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-accent" style={{ width: `${entry.progress}%` }} />
+                            <div className="h-full rounded-full bg-indigo-600" style={{ width: `${entry.progress}%` }} />
                           </div>
-                          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">
                             {entry.progress}% complete
                           </p>
                         </div>
                       ))}
-                      {learningCards.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">No enrolled courses yet.</p>}
+                      {learningCards.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-300">No enrolled courses yet.</p>}
                     </div>
                   </AnimatedCard>
 
                   <AnimatedCard className="p-6">
-                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Upcoming Workshops</h3>
+                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Upcoming Workshops</h3>
                     <div className="mt-6 grid gap-4">
                       {upcomingWorkshops.map((workshop) => (
-                        <div key={workshop.id} className="rounded-2xl border border-slate-200/70 bg-white/65 p-4 dark:border-slate-800 dark:bg-slate-950/45">
-                          <p className="text-xs uppercase tracking-[0.24em] text-accent">
+                        <div key={workshop.id} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 dark:text-teal-400">
                             {new Date(workshop.date).toLocaleDateString()}
                           </p>
-                          <h4 className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">{workshop.title}</h4>
-                          <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{workshop.description}</p>
+                          <h4 className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">{workshop.title}</h4>
+                          <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{workshop.description}</p>
                         </div>
                       ))}
-                      {upcomingWorkshops.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">No upcoming workshops available.</p>}
+                      {upcomingWorkshops.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-300">No upcoming workshops available.</p>}
                     </div>
                   </AnimatedCard>
                 </div>
@@ -433,15 +430,15 @@ function DashboardPage() {
                 <AnimatedCard className="p-6">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Recommended Courses</h3>
-                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">A horizontal strip for quick course discovery.</p>
+                      <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Recommended Courses</h3>
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">A horizontal strip for quick course discovery.</p>
                     </div>
                   </div>
                   <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
                     {recommendedCourses.map((course) => (
-                      <div key={course.id} className="min-w-[280px] max-w-[320px] flex-1 rounded-2xl border border-slate-200/70 bg-white/65 p-5 dark:border-slate-800 dark:bg-slate-950/45">
-                        <h4 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{getCourseTitle(course)}</h4>
-                        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{course.description}</p>
+                      <div key={course.id} className="min-w-[280px] max-w-[320px] flex-1 rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+                        <h4 className="text-lg font-semibold text-slate-900 dark:text-white">{getCourseTitle(course)}</h4>
+                        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{course.description}</p>
                         <div className="mt-4 flex items-center justify-between gap-3">
                           <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                             {Number(course.price || 0) > 0 ? `INR ${Number(course.price || 0)}` : 'Free'}
@@ -456,42 +453,42 @@ function DashboardPage() {
                         </div>
                       </div>
                     ))}
-                    {recommendedCourses.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">All available courses are already in your library.</p>}
+                    {recommendedCourses.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-300">All available courses are already in your library.</p>}
                   </div>
                 </AnimatedCard>
 
                 <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
                   <AnimatedCard className="p-6">
-                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Recently Viewed</h3>
+                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Recently Viewed</h3>
                     <div className="mt-6 grid gap-4 md:grid-cols-3">
                       {recentCourses.map((entry) => (
-                        <div key={entry.id} className="rounded-2xl border border-slate-200/70 bg-white/65 p-4 dark:border-slate-800 dark:bg-slate-950/45">
-                          <h4 className="text-base font-semibold text-slate-900 dark:text-slate-100">{getCourseTitle(entry.course)}</h4>
-                          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Payment: {entry.payment_status}</p>
-                          <Link to={`/dashboard/course/${entry.course?.id}`} className="mt-4 inline-flex text-sm font-semibold text-primary">
+                        <div key={entry.id} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                          <h4 className="text-base font-semibold text-slate-900 dark:text-white">{getCourseTitle(entry.course)}</h4>
+                          <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">Payment: {entry.payment_status}</p>
+                          <Link to={`/dashboard/course/${entry.course?.id}`} className="mt-4 inline-flex text-sm font-semibold text-indigo-600 dark:text-indigo-300">
                             Open Course
                           </Link>
                         </div>
                       ))}
-                      {recentCourses.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">Your recent courses will appear here.</p>}
+                      {recentCourses.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-300">Your recent courses will appear here.</p>}
                     </div>
                   </AnimatedCard>
 
                   <AnimatedCard className="p-6">
-                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Resource Highlights</h3>
+                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Resource Highlights</h3>
                     <div className="mt-6 space-y-4">
                       {featuredResources.map((item) => (
-                        <div key={item.id} className="rounded-2xl border border-slate-200/70 bg-white/65 p-4 dark:border-slate-800 dark:bg-slate-950/45">
-                          <p className="text-xs uppercase tracking-[0.24em] text-accent">{item.type}</p>
-                          <h4 className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">{item.title}</h4>
+                        <div key={item.id} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 dark:text-teal-400">{item.type}</p>
+                          <h4 className="mt-2 text-base font-semibold text-slate-900 dark:text-white">{item.title}</h4>
                           {item.content_url && (
-                            <a href={item.content_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-primary">
+                            <a href={item.content_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-indigo-600 dark:text-indigo-300">
                               Open Resource
                             </a>
                           )}
                         </div>
                       ))}
-                      {featuredResources.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">No resources available yet.</p>}
+                      {featuredResources.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-300">No resources available yet.</p>}
                     </div>
                   </AnimatedCard>
                 </div>
@@ -502,8 +499,8 @@ function DashboardPage() {
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {courses.map((course) => (
                   <AnimatedCard key={course.id} className="flex h-full flex-col p-5">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{getCourseTitle(course)}</h3>
-                    <p className="mt-3 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-400">{course.description}</p>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{getCourseTitle(course)}</h3>
+                    <p className="mt-3 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{course.description}</p>
                     <p className="mt-4 text-base font-semibold text-slate-800 dark:text-slate-100">INR {Number(course.price || 0)}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       {Number(course.price || 0) > 0 && (
@@ -524,14 +521,14 @@ function DashboardPage() {
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {learningCards.map((entry) => (
                   <AnimatedCard key={entry.id} className="p-5">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{getCourseTitle(entry.course)}</h3>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Payment: {entry.payment_status}</p>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{getCourseTitle(entry.course)}</h3>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Payment: {entry.payment_status}</p>
                     <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-                      <div className="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-accent" style={{ width: `${entry.progress}%` }} />
+                      <div className="h-full rounded-full bg-indigo-600" style={{ width: `${entry.progress}%` }} />
                     </div>
-                    <p className="mt-2 text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{entry.progress}% complete</p>
+                    <p className="mt-2 text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">{entry.progress}% complete</p>
                     <Link to={`/dashboard/course/${entry.course?.id}`} className="mt-4 inline-flex">
-                      <AnimatedButton variant="accent">Open Course</AnimatedButton>
+                      <AnimatedButton variant="primary">Open Course</AnimatedButton>
                     </Link>
                   </AnimatedCard>
                 ))}
@@ -543,8 +540,8 @@ function DashboardPage() {
               <div className="space-y-3">
                 {notifications.map((item) => (
                   <AnimatedCard key={item.id} className="p-5">
-                    <h4 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{item.title}</h4>
-                    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{item.message}</p>
+                    <h4 className="text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h4>
+                    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.message}</p>
                   </AnimatedCard>
                 ))}
                 {notifications.length === 0 && <AnimatedCard className="p-5">No notifications available.</AnimatedCard>}
@@ -555,10 +552,10 @@ function DashboardPage() {
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {resources.map((item) => (
                   <AnimatedCard key={item.id} className="p-5">
-                    <p className="text-xs uppercase tracking-[0.24em] text-accent">{item.type}</p>
-                    <h4 className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">{item.title}</h4>
+                    <p className="text-xs uppercase tracking-[0.14em] text-teal-600 dark:text-teal-400">{item.type}</p>
+                    <h4 className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h4>
                     {item.content_url && (
-                      <a href={item.content_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-primary">
+                      <a href={item.content_url} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-indigo-600 dark:text-indigo-300">
                         Open Resource
                       </a>
                     )}
@@ -571,28 +568,28 @@ function DashboardPage() {
             {!loading && activeSection === 'profile' && (
               <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
                 <AnimatedCard className="p-6">
-                  <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Profile Snapshot</h3>
-                  <div className="mt-6 space-y-4 text-sm text-slate-600 dark:text-slate-400">
+                  <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Profile Snapshot</h3>
+                  <div className="mt-6 space-y-4 text-sm text-slate-600 dark:text-slate-300">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-500">Name</p>
-                      <p className="mt-1 text-base font-medium text-slate-900 dark:text-slate-100">
+                      <p className="text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Name</p>
+                      <p className="mt-1 text-base font-medium text-slate-900 dark:text-white">
                         {profile?.first_name} {profile?.last_name}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-500">Email</p>
-                      <p className="mt-1 text-base font-medium text-slate-900 dark:text-slate-100">{profile?.email}</p>
+                      <p className="text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Email</p>
+                      <p className="mt-1 text-base font-medium text-slate-900 dark:text-white">{profile?.email}</p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-500">Phone</p>
-                      <p className="mt-1 text-base font-medium text-slate-900 dark:text-slate-100">{profile?.phone || 'Not added yet'}</p>
+                      <p className="text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Phone</p>
+                      <p className="mt-1 text-base font-medium text-slate-900 dark:text-white">{profile?.phone || 'Not added yet'}</p>
                     </div>
                   </div>
                 </AnimatedCard>
 
                 <div className="grid gap-5 lg:grid-cols-2">
-                  <form onSubmit={handleProfileUpdate} className="glass-card rounded-2xl p-6 shadow-glow">
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Edit Profile</h3>
+                  <form onSubmit={handleProfileUpdate} className="glass-card rounded-xl p-6">
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Edit Profile</h3>
                     <div className="mt-5 grid gap-3">
                       <input
                         className={inputClassName}
@@ -612,12 +609,12 @@ function DashboardPage() {
                         onChange={(e) => setProfileForm((prev) => ({ ...prev, phone: e.target.value }))}
                         placeholder="Phone"
                       />
-                      <AnimatedButton variant="accent">Save Profile</AnimatedButton>
+                      <AnimatedButton variant="primary">Save Profile</AnimatedButton>
                     </div>
                   </form>
 
-                  <form onSubmit={handlePasswordUpdate} className="glass-card rounded-2xl p-6 shadow-glow">
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Change Password</h3>
+                  <form onSubmit={handlePasswordUpdate} className="glass-card rounded-xl p-6">
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Change Password</h3>
                     <div className="mt-5 grid gap-3">
                       <input
                         type="password"

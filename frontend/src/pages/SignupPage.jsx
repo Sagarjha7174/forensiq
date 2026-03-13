@@ -99,29 +99,26 @@ function SignupPage() {
   };
 
   return (
-    <section className="relative -mx-4 -mb-10 flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden px-4 py-12 md:-mx-6 md:px-6">
-      <div className="auth-blob auth-blob-1" />
-      <div className="auth-blob auth-blob-2" />
-      <div className="auth-blob auth-blob-3" />
+    <section className="-mx-4 -mb-10 flex min-h-[calc(100vh-5rem)] items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-12 dark:from-slate-900 dark:to-slate-950 md:-mx-6 md:px-6">
 
       <motion.div
-        initial={{ opacity: 0, y: 28 }}
+        initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-2xl"
       >
-        <div className="overflow-hidden rounded-2xl border border-indigo-100/70 bg-white/80 p-8 shadow-[0_20px_60px_rgba(99,102,241,0.15),0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/75 dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-8 shadow-card dark:border-slate-700 dark:bg-slate-800">
           <div className="mb-7 text-center">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.08, duration: 0.4 }}
-              className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30"
+              className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-600"
             >
               <UserPlus size={24} className="text-white" />
             </motion.div>
             <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">Create Account</h1>
-            <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">Join ForensIQ and unlock courses, resources, and workshops</p>
+            <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-300">Join ForensIQ and unlock courses, resources, and workshops</p>
           </div>
 
           <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
@@ -166,7 +163,7 @@ function SignupPage() {
                 value={form.class_id}
                 onChange={handleChange}
                 disabled={classLoading}
-                className={`w-full rounded-xl border bg-white/80 px-4 py-3 text-sm outline-none transition-all duration-300 focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.2)] dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-100 ${errors.class_id ? 'border-rose-400' : 'border-slate-200 dark:border-slate-700'}`}
+                className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-colors duration-200 focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.2)] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 ${errors.class_id ? 'border-rose-400' : 'border-slate-300 dark:border-slate-700'}`}
                 required
               >
                 <option value="">{classLoading ? 'Loading classes…' : 'Select Your Class'}</option>
@@ -199,11 +196,11 @@ function SignupPage() {
               autoComplete="new-password"
               error={errors.confirmPassword}
             />
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-500 dark:text-slate-400 md:col-span-2">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-500 dark:text-slate-300 md:col-span-2">
               <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} className="accent-indigo-600" />
               I agree to the Terms of Service and Privacy Policy
             </label>
-            <AnimatedButton type="submit" disabled={loading} loading={loading} variant="accent" className="py-3 text-base md:col-span-2">
+            <AnimatedButton type="submit" disabled={loading} loading={loading} variant="primary" className="py-3 text-base md:col-span-2">
               {loading ? 'Creating Account…' : 'Create Account'}
             </AnimatedButton>
           </form>
