@@ -8,9 +8,9 @@ function MainLayout() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <div className="pointer-events-none absolute left-[-120px] top-24 h-72 w-72 rounded-full bg-cyan-200/45 blur-3xl dark:bg-cyan-700/30" />
-      <div className="pointer-events-none absolute right-[-120px] top-[42rem] h-80 w-80 rounded-full bg-indigo-200/50 blur-3xl dark:bg-indigo-700/25" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-emerald-100/40 blur-3xl dark:bg-emerald-800/20" />
+      <div className="pointer-events-none absolute left-[-120px] top-24 h-72 w-72 rounded-full bg-indigo-300/25 blur-3xl dark:bg-indigo-600/15" />
+      <div className="pointer-events-none absolute right-[-120px] top-[42rem] h-80 w-80 rounded-full bg-purple-200/30 blur-3xl dark:bg-purple-700/15" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-indigo-100/25 blur-3xl dark:bg-indigo-900/20" />
       <Navbar />
       <main className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-10 md:px-6">
         <motion.div

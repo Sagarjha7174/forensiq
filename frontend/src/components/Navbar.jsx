@@ -32,10 +32,10 @@ function Navbar() {
     <motion.header
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="sticky top-0 z-50 border-b border-white/30 bg-white/65 backdrop-blur-2xl dark:border-slate-700 dark:bg-slate-950/65"
+      className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/88 backdrop-blur-2xl dark:border-slate-800 dark:bg-slate-900/88"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
-        <Link to="/" className="font-heading text-2xl font-bold text-primary dark:text-slate-100 md:text-3xl">
+        <Link to="/" className="font-heading text-2xl font-bold text-indigo-600 dark:text-indigo-400 md:text-3xl">
           ForensIQ
         </Link>
 
@@ -47,7 +47,7 @@ function Navbar() {
               to={item.to}
               className={({ isActive }) =>
                 `text-sm font-medium transition ${
-                  isActive ? 'text-accent' : 'text-slate-700 hover:text-primary dark:text-slate-200 dark:hover:text-white'
+                  isActive ? 'text-indigo-600 dark:text-indigo-400' : 'relative text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 after:absolute after:bottom-[-3px] after:left-0 after:h-[2px] after:w-0 after:rounded-full after:bg-indigo-500 after:transition-all after:duration-300 hover:after:w-full'
                 }`
               }
             >
@@ -58,7 +58,7 @@ function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu((prev) => !prev)}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/50 bg-white/70 px-3 py-2 text-sm font-medium text-primary dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-100"
+                className="inline-flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50/80 px-3 py-2 text-sm font-medium text-indigo-700 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-100"
               >
                 <UserCircle2 size={16} />
                 {user?.first_name || 'Account'}
@@ -70,7 +70,7 @@ function Navbar() {
                     initial={{ opacity: 0, y: -8, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                    className="absolute right-0 mt-2 w-48 rounded-xl border border-white/50 bg-white/90 p-2 shadow-glow dark:border-slate-700 dark:bg-slate-950/90"
+                    className="absolute right-0 mt-2 w-48 rounded-xl border border-indigo-100/80 bg-white/95 p-2 shadow-xl shadow-indigo-500/10 dark:border-slate-700 dark:bg-slate-900/95"
                   >
                     <Link
                       to="/profile"
@@ -117,7 +117,7 @@ function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-white/40 bg-white/85 px-4 py-3 dark:border-slate-700 dark:bg-slate-950/95 md:hidden"
+            className="border-t border-slate-200/70 bg-white/92 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/95 md:hidden"
           >
             <div className="mb-3">
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -128,7 +128,7 @@ function Navbar() {
                   key={item.to}
                   to={item.to}
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg px-2 py-1 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="rounded-lg px-2 py-1 text-sm font-medium text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   {item.label}
                 </NavLink>

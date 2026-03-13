@@ -5,11 +5,12 @@
 @tailwind utilities;
 
 :root {
-  --primary: #0f2744;
-  --secondary: #1e3a5f;
-  --accent: #4f46e5;
-  --page: #eef5fb;
-  --ink: #0b1220;
+  --primary: #6366f1;
+  --secondary: #4f46e5;
+  --deep: #312e81;
+  --accent: #8b5cf6;
+  --page: #f8fafc;
+  --ink: #1e293b;
 }
 
 * {
@@ -25,20 +26,14 @@ body,
 
 body {
   font-family: 'Manrope', sans-serif;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(78, 152, 255, 0.14), transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(15, 39, 68, 0.16), transparent 35%),
-    linear-gradient(180deg, #f7fbff 0%, var(--page) 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 55%, #ede9fe 100%);
   color: var(--ink);
   transition: background-color 300ms ease, color 300ms ease;
 }
 
 html.dark body {
-  background:
-    radial-gradient(circle at 10% 12%, rgba(25, 90, 189, 0.26), transparent 40%),
-    radial-gradient(circle at 88% 20%, rgba(5, 23, 44, 0.48), transparent 34%),
-    linear-gradient(180deg, #030915 0%, #081224 55%, #0c1a31 100%);
-  color: #d9e8ff;
+  background: linear-gradient(135deg, #020617 0%, #0f172a 55%, #1e1b4b 100%);
+  color: #e2e8f0;
 }
 
 body,
@@ -64,15 +59,15 @@ h6 {
 }
 
 .glass-card {
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.58));
-  backdrop-filter: blur(14px) saturate(125%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.82), rgba(248, 250, 255, 0.68));
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
 }
 
 html.dark .glass-card {
-  background: linear-gradient(145deg, rgba(12, 23, 45, 0.9), rgba(9, 18, 35, 0.82));
-  border-color: rgba(104, 132, 173, 0.22);
-  box-shadow: 0 16px 38px rgba(2, 10, 21, 0.4);
+  background: linear-gradient(145deg, rgba(30, 27, 75, 0.55), rgba(15, 23, 42, 0.65));
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 16px 38px rgba(0, 5, 20, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.08);
 }
 
 .section-title {
@@ -89,8 +84,8 @@ html.dark .glass-card {
 
 .fancy-grid {
   background-image:
-    linear-gradient(rgba(15, 39, 68, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 39, 68, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
   background-size: 30px 30px;
 }
 
@@ -99,7 +94,7 @@ html.dark .glass-card {
 }
 
 .input-glow:focus {
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16), 0 0 40px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.22), 0 0 40px rgba(99, 102, 241, 0.18);
 }
 
 @keyframes floating {
@@ -109,5 +104,78 @@ html.dark .glass-card {
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+/* Auth page animated blobs */
+.auth-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+.auth-blob-1 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.38), transparent 70%);
+  top: -160px;
+  left: -160px;
+  animation: blobFloat 14s ease-in-out infinite;
+}
+
+.auth-blob-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.35), transparent 70%);
+  bottom: -120px;
+  right: -120px;
+  animation: blobFloatAlt 16s ease-in-out infinite;
+}
+
+.auth-blob-3 {
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.28), transparent 70%);
+  top: 38%;
+  left: 52%;
+  animation: blobFloat 11s ease-in-out infinite reverse;
+}
+
+html.dark .auth-blob-1 {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.55), transparent 70%);
+}
+
+html.dark .auth-blob-2 {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.5), transparent 70%);
+}
+
+html.dark .auth-blob-3 {
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.42), transparent 70%);
+}
+
+@keyframes blobFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(35px, -45px) scale(1.07);
+  }
+  66% {
+    transform: translate(-25px, 20px) scale(0.96);
+  }
+}
+
+@keyframes blobFloatAlt {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-30px, 38px) scale(1.05);
+  }
+  66% {
+    transform: translate(22px, -18px) scale(0.97);
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authService, classService } from '../services/api';
 import { setAuthSession } from '../services/authStorage';
@@ -98,107 +99,123 @@ function SignupPage() {
   };
 
   return (
-    <section className="relative mx-auto mt-14 w-full max-w-2xl overflow-hidden rounded-2xl border border-white/50 bg-white/75 p-6 shadow-glow backdrop-blur-2xl dark:border-slate-700 dark:bg-slate-950/75">
-      <div className="pointer-events-none absolute -right-14 top-10 h-44 w-44 rounded-full bg-indigo-100/75 blur-3xl" />
-      <div className="pointer-events-none absolute -left-10 bottom-8 h-36 w-36 rounded-full bg-teal-100/75 blur-3xl" />
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="font-heading text-3xl text-primary"
-      >
-        Create Account
-      </motion.h1>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Join the platform and unlock courses, resources, and workshops.</p>
+    <section className="relative -mx-4 -mb-10 flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden px-4 py-12 md:-mx-6 md:px-6">
+      <div className="auth-blob auth-blob-1" />
+      <div className="auth-blob auth-blob-2" />
+      <div className="auth-blob auth-blob-3" />
 
-      <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
-        <FloatingInput
-          name="first_name"
-          label="First Name"
-          value={form.first_name}
-          onChange={handleChange}
-          required
-          error={errors.first_name}
-        />
-        <FloatingInput
-          name="last_name"
-          label="Last Name"
-          value={form.last_name}
-          onChange={handleChange}
-          required
-          error={errors.last_name}
-        />
-        <FloatingInput
-          type="email"
-          name="email"
-          label="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          autoComplete="email"
-          error={errors.email}
-        />
-        <FloatingInput
-          type="tel"
-          name="phone"
-          label="Phone"
-          value={form.phone}
-          onChange={handleChange}
-          required
-          error={errors.phone}
-        />
-        <label className="relative block">
-          <select
-            name="class_id"
-            value={form.class_id}
-            onChange={handleChange}
-            disabled={classLoading}
-            className={`w-full rounded-xl border bg-white/70 px-4 py-3 text-sm outline-none transition focus:border-accent focus:shadow-[0_0_0_3px_rgba(79,70,229,0.15)] dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 ${errors.class_id ? 'border-rose-400' : 'border-white/35'}`}
-            required
-          >
-            <option value="">{classLoading ? 'Loading classes...' : 'Select Class'}</option>
-            {classes.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-          {classLoadError ? <span className="mt-1 block text-xs text-rose-600">{classLoadError}</span> : null}
-          {errors.class_id ? <span className="mt-1 block text-xs text-rose-600">{errors.class_id}</span> : null}
-        </label>
-        <FloatingInput
-          type="password"
-          name="password"
-          label="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          autoComplete="new-password"
-          error={errors.password}
-        />
-        <FloatingInput
-          type="password"
-          name="confirmPassword"
-          label="Confirm Password"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-          autoComplete="new-password"
-          error={errors.confirmPassword}
-        />
-        <label className="md:col-span-2 flex items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
-          I agree to terms
-        </label>
-        <AnimatedButton type="submit" disabled={loading} loading={loading} variant="accent" className="md:col-span-2">
-          {loading ? 'Submitting...' : 'Submit'}
-        </AnimatedButton>
-      </form>
-      <p className="mt-4 text-sm text-slate-600">
-        Already have an account?{' '}
-        <Link to="/login" className="text-primary">
-          Sign in
-        </Link>
-      </p>
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 w-full max-w-2xl"
+      >
+        <div className="overflow-hidden rounded-2xl border border-indigo-100/70 bg-white/80 p-8 shadow-[0_20px_60px_rgba(99,102,241,0.15),0_4px_16px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/75 dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+          <div className="mb-7 text-center">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.08, duration: 0.4 }}
+              className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30"
+            >
+              <UserPlus size={24} className="text-white" />
+            </motion.div>
+            <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">Create Account</h1>
+            <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">Join ForensIQ and unlock courses, resources, and workshops</p>
+          </div>
+
+          <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
+            <FloatingInput
+              name="first_name"
+              label="First Name"
+              value={form.first_name}
+              onChange={handleChange}
+              required
+              error={errors.first_name}
+            />
+            <FloatingInput
+              name="last_name"
+              label="Last Name"
+              value={form.last_name}
+              onChange={handleChange}
+              required
+              error={errors.last_name}
+            />
+            <FloatingInput
+              type="email"
+              name="email"
+              label="Email Address"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+              error={errors.email}
+            />
+            <FloatingInput
+              type="tel"
+              name="phone"
+              label="Phone Number"
+              value={form.phone}
+              onChange={handleChange}
+              required
+              error={errors.phone}
+            />
+            <label className="relative block">
+              <select
+                name="class_id"
+                value={form.class_id}
+                onChange={handleChange}
+                disabled={classLoading}
+                className={`w-full rounded-xl border bg-white/80 px-4 py-3 text-sm outline-none transition-all duration-300 focus:border-indigo-500 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.2)] dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-100 ${errors.class_id ? 'border-rose-400' : 'border-slate-200 dark:border-slate-700'}`}
+                required
+              >
+                <option value="">{classLoading ? 'Loading classes…' : 'Select Your Class'}</option>
+                {classes.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+              {classLoadError ? <span className="mt-1 block text-xs text-rose-500">{classLoadError}</span> : null}
+              {errors.class_id ? <span className="mt-1 block text-xs text-rose-500">{errors.class_id}</span> : null}
+            </label>
+            <FloatingInput
+              type="password"
+              name="password"
+              label="Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              autoComplete="new-password"
+              error={errors.password}
+            />
+            <FloatingInput
+              type="password"
+              name="confirmPassword"
+              label="Confirm Password"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              required
+              autoComplete="new-password"
+              error={errors.confirmPassword}
+            />
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-500 dark:text-slate-400 md:col-span-2">
+              <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} className="accent-indigo-600" />
+              I agree to the Terms of Service and Privacy Policy
+            </label>
+            <AnimatedButton type="submit" disabled={loading} loading={loading} variant="accent" className="py-3 text-base md:col-span-2">
+              {loading ? 'Creating Account…' : 'Create Account'}
+            </AnimatedButton>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+              Sign in →
+            </Link>
+          </p>
+        </div>
+      </motion.div>
     </section>
   );
 }
