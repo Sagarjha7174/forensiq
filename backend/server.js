@@ -43,6 +43,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:4173',
   'http://127.0.0.1:4173',
+  'https://forensiq-six.vercel.app',
   ...(process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
     : [])
@@ -51,7 +52,15 @@ const allowedOrigins = [
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      let isAllowedVercelPreview = false;
+      if (typeof origin === 'string') {
+        try {
+          isAllowedVercelPreview = /\.vercel\.app$/i.test(new URL(origin).hostname);
+        } catch {
+          isAllowedVercelPreview = false;
+        }
+      }
+      if (!origin || allowedOrigins.includes(origin) || isAllowedVercelPreview) return callback(null, true);
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true
