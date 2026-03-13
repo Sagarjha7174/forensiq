@@ -23,10 +23,12 @@ const Enrollment = sequelize.define(
       defaultValue: 0
     },
     payment_status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('paid', 'pending', 'free', 'failed'),
       allowNull: false,
       defaultValue: 'paid'
-    }
+    },
+    razorpay_order_id: { type: DataTypes.STRING, allowNull: true },
+    razorpay_payment_id: { type: DataTypes.STRING, allowNull: true }
   },
   {
     tableName: 'enrollments',

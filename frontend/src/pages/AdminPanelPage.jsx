@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   adminService,
@@ -15,12 +15,13 @@ function AdminPanelPage() {
   const [users, setUsers] = useState([]);
   const [classes, setClasses] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [resources, setResources] = useState([]);
 
   const [courseForm, setCourseForm] = useState({
     name: '',
-    class_id: '',
+    class_ids: [],
     description: '',
     price: '',
     thumbnail: ''
@@ -28,13 +29,12 @@ function AdminPanelPage() {
   const [resourceForm, setResourceForm] = useState({
     title: '',
     type: 'lecture',
-    class_id: '',
     course_id: '',
+    order_index: 0,
     content_url: ''
   });
   const [quizForm, setQuizForm] = useState({
     title: '',
-    class_id: '',
     course_id: '',
     timer_minutes: 30,
     question: '',
@@ -49,15 +49,21 @@ function AdminPanelPage() {
   });
   const [workshopForm, setWorkshopForm] = useState({ title: '', description: '', image: '', date: '' });
 
+  const selectedCourse = useMemo(
+    () => courses.find((c) => Number(c.id) === Number(quizForm.course_id)),
+    [courses, quizForm.course_id]
+  );
+
   const loadAll = async () => {
     try {
-      const [statsRes, usersRes, classesRes, coursesRes, notificationsRes, resourcesRes] = await Promise.all([
+      const [statsRes, usersRes, classesRes, coursesRes, notificationsRes, resourcesRes, quizzesRes] = await Promise.all([
         adminService.getStats(),
         adminService.getUsers(),
         classService.getClasses(),
         courseService.getCourses(),
         notificationService.getNotifications(),
-        resourceService.getResources()
+        resourceService.getResources(),
+        quizService.getQuizzes()
       ]);
       setStats(statsRes.data);
       setUsers(usersRes.data || []);
@@ -65,6 +71,7 @@ function AdminPanelPage() {
       setCourses(coursesRes.data || []);
       setNotifications(notificationsRes.data || []);
       setResources(resourcesRes.data || []);
+      setQuizzes(quizzesRes.data || []);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to load admin panel');
     }
@@ -74,16 +81,26 @@ function AdminPanelPage() {
     loadAll();
   }, []);
 
+  const toggleCourseClass = (classId) => {
+    setCourseForm((prev) => {
+      const exists = prev.class_ids.includes(classId);
+      return {
+        ...prev,
+        class_ids: exists ? prev.class_ids.filter((id) => id !== classId) : [...prev.class_ids, classId]
+      };
+    });
+  };
+
   const createCourse = async (e) => {
     e.preventDefault();
     try {
       await courseService.createCourse({
         ...courseForm,
-        class_id: Number(courseForm.class_id),
-        price: Number(courseForm.price)
+        class_ids: courseForm.class_ids,
+        price: Number(courseForm.price || 0)
       });
       toast.success('Course created');
-      setCourseForm({ name: '', class_id: '', description: '', price: '', thumbnail: '' });
+      setCourseForm({ name: '', class_ids: [], description: '', price: '', thumbnail: '' });
       await loadAll();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to create course');
@@ -95,11 +112,11 @@ function AdminPanelPage() {
     try {
       await resourceService.createResource({
         ...resourceForm,
-        class_id: resourceForm.class_id ? Number(resourceForm.class_id) : null,
-        course_id: resourceForm.course_id ? Number(resourceForm.course_id) : null
+        course_id: Number(resourceForm.course_id),
+        order_index: Number(resourceForm.order_index || 0)
       });
       toast.success('Resource added');
-      setResourceForm({ title: '', type: 'lecture', class_id: '', course_id: '', content_url: '' });
+      setResourceForm({ title: '', type: 'lecture', course_id: '', order_index: 0, content_url: '' });
       await loadAll();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to create resource');
@@ -116,8 +133,7 @@ function AdminPanelPage() {
 
       await quizService.createQuiz({
         title: quizForm.title,
-        class_id: quizForm.class_id ? Number(quizForm.class_id) : null,
-        course_id: quizForm.course_id ? Number(quizForm.course_id) : null,
+        course_id: Number(quizForm.course_id),
         timer_minutes: Number(quizForm.timer_minutes || 30),
         questions: [
           {
@@ -130,7 +146,6 @@ function AdminPanelPage() {
       toast.success('Quiz created');
       setQuizForm({
         title: '',
-        class_id: '',
         course_id: '',
         timer_minutes: 30,
         question: '',
@@ -140,6 +155,16 @@ function AdminPanelPage() {
       await loadAll();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to create quiz');
+    }
+  };
+
+  const deleteQuiz = async (id) => {
+    try {
+      await quizService.deleteQuiz(id);
+      toast.success('Quiz deleted');
+      await loadAll();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Unable to delete quiz');
     }
   };
 
@@ -195,10 +220,21 @@ function AdminPanelPage() {
         <form onSubmit={createCourse} className="glass-card rounded-2xl p-5 shadow-glow space-y-3">
           <h2 className="text-lg font-semibold text-primary">Course Management</h2>
           <input value={courseForm.name} onChange={(e) => setCourseForm((p) => ({ ...p, name: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Course title" required />
-          <select value={courseForm.class_id} onChange={(e) => setCourseForm((p) => ({ ...p, class_id: e.target.value }))} className="w-full rounded-lg border px-3 py-2" required>
-            <option value="">Select class</option>
-            {classes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-          </select>
+          <div className="rounded-lg border p-3">
+            <p className="mb-2 text-sm font-medium text-slate-700">Assign Classes (multi-select)</p>
+            <div className="grid gap-2 md:grid-cols-2">
+              {classes.map((item) => (
+                <label key={item.id} className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={courseForm.class_ids.includes(item.id)}
+                    onChange={() => toggleCourseClass(item.id)}
+                  />
+                  {item.name}
+                </label>
+              ))}
+            </div>
+          </div>
           <textarea value={courseForm.description} onChange={(e) => setCourseForm((p) => ({ ...p, description: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Description" required />
           <input type="number" value={courseForm.price} onChange={(e) => setCourseForm((p) => ({ ...p, price: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Price" required />
           <input value={courseForm.thumbnail} onChange={(e) => setCourseForm((p) => ({ ...p, thumbnail: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Thumbnail URL" />
@@ -214,21 +250,27 @@ function AdminPanelPage() {
             <option value="quiz">Quiz</option>
             <option value="announcement">Announcement</option>
           </select>
-          <select value={resourceForm.class_id} onChange={(e) => setResourceForm((p) => ({ ...p, class_id: e.target.value }))} className="w-full rounded-lg border px-3 py-2">
-            <option value="">Visible class (optional)</option>
-            {classes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-          </select>
-          <select value={resourceForm.course_id} onChange={(e) => setResourceForm((p) => ({ ...p, course_id: e.target.value }))} className="w-full rounded-lg border px-3 py-2">
-            <option value="">Visible course (optional)</option>
+          <select value={resourceForm.course_id} onChange={(e) => setResourceForm((p) => ({ ...p, course_id: e.target.value }))} className="w-full rounded-lg border px-3 py-2" required>
+            <option value="">Select course</option>
             {courses.map((item) => <option key={item.id} value={item.id}>{item.name || item.title}</option>)}
           </select>
+          <input type="number" value={resourceForm.order_index} onChange={(e) => setResourceForm((p) => ({ ...p, order_index: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Lecture order" />
           <input value={resourceForm.content_url} onChange={(e) => setResourceForm((p) => ({ ...p, content_url: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Content URL" />
           <button className="rounded-lg bg-primary px-4 py-2 text-white">Add Resource</button>
         </form>
 
         <form onSubmit={createQuiz} className="glass-card rounded-2xl p-5 shadow-glow space-y-3">
-          <h2 className="text-lg font-semibold text-primary">Quiz Management</h2>
+          <h2 className="text-lg font-semibold text-primary">Quiz Management (Course-specific)</h2>
           <input value={quizForm.title} onChange={(e) => setQuizForm((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Quiz title" required />
+          <select value={quizForm.course_id} onChange={(e) => setQuizForm((p) => ({ ...p, course_id: e.target.value }))} className="w-full rounded-lg border px-3 py-2" required>
+            <option value="">Select course</option>
+            {courses.map((item) => <option key={item.id} value={item.id}>{item.name || item.title}</option>)}
+          </select>
+          {selectedCourse && (
+            <p className="rounded-lg bg-white/70 p-2 text-xs text-slate-600">
+              Quiz will be visible in course: <span className="font-medium">{selectedCourse.name || selectedCourse.title}</span>
+            </p>
+          )}
           <input type="number" value={quizForm.timer_minutes} onChange={(e) => setQuizForm((p) => ({ ...p, timer_minutes: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Timer (minutes)" />
           <textarea value={quizForm.question} onChange={(e) => setQuizForm((p) => ({ ...p, question: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Question" required />
           <input value={quizForm.options_csv} onChange={(e) => setQuizForm((p) => ({ ...p, options_csv: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Options comma-separated" required />
@@ -263,6 +305,36 @@ function AdminPanelPage() {
         </form>
       </div>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="glass-card rounded-2xl p-5 shadow-glow">
+          <h2 className="text-lg font-semibold text-primary">Existing Quizzes</h2>
+          <div className="mt-3 space-y-2">
+            {quizzes.slice(0, 10).map((item) => (
+              <div key={item.id} className="flex items-center justify-between rounded-lg bg-white/70 p-3 text-sm">
+                <div>
+                  <p className="font-medium text-primary">{item.title}</p>
+                  <p className="text-slate-600">{item.course?.name || 'Course not found'}</p>
+                </div>
+                <button onClick={() => deleteQuiz(item.id)} className="rounded bg-rose-500 px-3 py-1 text-white">
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="glass-card rounded-2xl p-5 shadow-glow">
+          <h2 className="text-lg font-semibold text-primary">Recent Resources</h2>
+          <div className="mt-3 space-y-2">
+            {resources.slice(0, 6).map((item) => (
+              <div key={item.id} className="rounded-lg bg-white/70 p-3 text-sm">
+                <p className="font-medium text-primary">{item.title}</p>
+                <p className="text-slate-600 uppercase">{item.type}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="glass-card rounded-2xl p-5 shadow-glow">
         <h2 className="text-lg font-semibold text-primary">Users</h2>
         <div className="mt-3 overflow-x-auto">
@@ -292,31 +364,6 @@ function AdminPanelPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="glass-card rounded-2xl p-5 shadow-glow">
-          <h2 className="text-lg font-semibold text-primary">Recent Notifications</h2>
-          <div className="mt-3 space-y-2">
-            {notifications.slice(0, 6).map((item) => (
-              <div key={item.id} className="rounded-lg bg-white/70 p-3 text-sm">
-                <p className="font-medium text-primary">{item.title}</p>
-                <p className="text-slate-600">{item.message}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="glass-card rounded-2xl p-5 shadow-glow">
-          <h2 className="text-lg font-semibold text-primary">Recent Resources</h2>
-          <div className="mt-3 space-y-2">
-            {resources.slice(0, 6).map((item) => (
-              <div key={item.id} className="rounded-lg bg-white/70 p-3 text-sm">
-                <p className="font-medium text-primary">{item.title}</p>
-                <p className="text-slate-600 uppercase">{item.type}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

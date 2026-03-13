@@ -13,21 +13,7 @@ const Course = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    class_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     description: {
-          id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true
-          },
-          name: {
-            type: DataTypes.STRING,
-            allowNull: false
-          },
-          description: {
       type: DataTypes.TEXT,
       allowNull: false
     },

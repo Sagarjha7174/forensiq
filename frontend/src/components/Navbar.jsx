@@ -10,7 +10,7 @@ function Navbar() {
 
   const navItems = [
     { to: '/', label: 'Home' },
-    { to: '/team', label: 'Team' },
+    ...(!authed ? [{ to: '/team', label: 'Team' }] : []),
     ...(authed ? [{ to: '/dashboard', label: 'Dashboard' }] : []),
     ...(user?.role === 'admin' ? [{ to: '/admin', label: 'Admin' }] : []),
     ...(!authed

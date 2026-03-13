@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { authService, classService, courseService } from '../services/api';
+import { authService, classService } from '../services/api';
 import { setAuthSession } from '../services/authStorage';
 
 const initialForm = {
@@ -12,7 +12,6 @@ const initialForm = {
   password: '',
   confirmPassword: '',
   class_id: '',
-  course_id: '',
   agree: false
 };
 
@@ -21,28 +20,19 @@ function SignupPage() {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState([]);
-  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     const loadOptions = async () => {
       try {
-        const [classRes, courseRes] = await Promise.all([
-          classService.getClasses(),
-          courseService.getCourses()
-        ]);
+        const classRes = await classService.getClasses();
         setClasses(classRes.data || []);
-        setCourses(courseRes.data || []);
       } catch (error) {
-        toast.error('Failed to load classes/courses');
+        toast.error('Failed to load classes');
       }
     };
 
     loadOptions();
   }, []);
-
-  const filteredCourses = courses.filter(
-    (course) => !form.class_id || Number(course.class_id) === Number(form.class_id)
-  );
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -70,8 +60,7 @@ function SignupPage() {
         email: form.email,
         phone: form.phone,
         password: form.password,
-        class_id: Number(form.class_id),
-        course_id: form.course_id ? Number(form.course_id) : null
+        class_id: Number(form.class_id)
       };
       const response = await authService.register(payload);
       setAuthSession(response.data.token, response.data.user);
@@ -135,19 +124,6 @@ function SignupPage() {
           {classes.map((item) => (
             <option key={item.id} value={item.id}>
               {item.name}
-            </option>
-          ))}
-        </select>
-        <select
-          name="course_id"
-          value={form.course_id}
-          onChange={handleChange}
-          className="rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-accent"
-        >
-          <option value="">Select Course</option>
-          {filteredCourses.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name || item.title}
             </option>
           ))}
         </select>

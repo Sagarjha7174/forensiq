@@ -1,28 +1,23 @@
 const { Op } = require('sequelize');
 const Resource = require('../models/Resource');
 const Notification = require('../models/Notification');
+const Enrollment = require('../models/Enrollment');
 
 exports.getResources = async (req, res) => {
   try {
     const where = {};
 
     if (req.user.role !== 'admin') {
-      where[Op.or] = [
-        { class_id: req.user.class_id },
-        { course_id: req.user.course_id },
-        { class_id: null, course_id: null }
-      ];
+      const enrollments = await Enrollment.findAll({ where: { user_id: req.user.id } });
+      const enrolledCourseIds = enrollments.map((e) => e.course_id);
+      if (enrolledCourseIds.length === 0) return res.json([]);
+      where.course_id = { [Op.in]: enrolledCourseIds };
     }
 
-    if (req.query.course_id) {
-      where.course_id = req.query.course_id;
-    }
+    if (req.query.course_id) where.course_id = req.query.course_id;
+    if (req.query.type) where.type = req.query.type;
 
-    if (req.query.type) {
-      where.type = req.query.type;
-    }
-
-    const resources = await Resource.findAll({ where, order: [['id', 'DESC']] });
+    const resources = await Resource.findAll({ where, order: [['order_index', 'ASC'], ['id', 'ASC']] });
     return res.json(resources);
   } catch (error) {
     return res.status(500).json({ message: 'Failed to fetch resources', error: error.message });
@@ -31,8 +26,10 @@ exports.getResources = async (req, res) => {
 
 exports.createResource = async (req, res) => {
   try {
-    const { title, type, class_id, course_id, content_url } = req.body;
-    const resource = await Resource.create({ title, type, class_id, course_id, content_url });
+    const { title, type, course_id, content_url, order_index = 0 } = req.body;
+    if (!course_id) return res.status(400).json({ message: 'course_id is required' });
+
+    const resource = await Resource.create({ title, type, course_id, content_url, order_index });
 
     const messageMap = {
       lecture: 'New Lecture Uploaded',
@@ -44,7 +41,6 @@ exports.createResource = async (req, res) => {
     await Notification.create({
       title: messageMap[type] || 'New Resource Added',
       message: `${title} has been added to your learning resources.`,
-      class_id,
       course_id
     });
 

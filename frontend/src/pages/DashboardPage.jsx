@@ -7,21 +7,11 @@ import {
   courseService,
   enrollmentService,
   notificationService,
-  progressService,
-  quizService,
   resourceService
 } from '../services/api';
 import { getStoredUser, setAuthSession } from '../services/authStorage';
 
-const sections = [
-  'Dashboard',
-  'Profile',
-  'My Courses',
-  'Browse Courses',
-  'Notifications',
-  'Resources',
-  'Quizzes'
-];
+const sections = ['Dashboard', 'Profile', 'Courses', 'My Courses', 'Notifications', 'Resources'];
 
 function DashboardPage() {
   const [activeSection, setActiveSection] = useState('Dashboard');
@@ -33,20 +23,18 @@ function DashboardPage() {
   const [myCourses, setMyCourses] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [resources, setResources] = useState([]);
-  const [quizzes, setQuizzes] = useState([]);
 
   const user = getStoredUser();
 
   const initLoad = async () => {
     try {
       setLoading(true);
-      const [profileRes, coursesRes, myCoursesRes, notiRes, resourcesRes, quizzesRes] = await Promise.all([
+      const [profileRes, coursesRes, myCoursesRes, notiRes, resourcesRes] = await Promise.all([
         authService.profile(),
-        courseService.getCourses(),
+        courseService.getCourses({ class_id: user?.class_id }),
         enrollmentService.getMyCourses(),
         notificationService.getNotifications(),
-        resourceService.getResources(),
-        quizService.getQuizzes()
+        resourceService.getResources()
       ]);
 
       const profileData = profileRes.data;
@@ -61,7 +49,6 @@ function DashboardPage() {
       setMyCourses(myCoursesRes.data || []);
       setNotifications(notiRes.data || []);
       setResources(resourcesRes.data || []);
-      setQuizzes(quizzesRes.data || []);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to load dashboard data');
     } finally {
@@ -78,14 +65,75 @@ function DashboardPage() {
     [myCourses]
   );
 
-  const handleEnroll = async (courseId) => {
+  const refreshMyCourses = async () => {
+    const myCoursesRes = await enrollmentService.getMyCourses();
+    setMyCourses(myCoursesRes.data || []);
+  };
+
+  const handleFreeBuy = async (courseId) => {
     try {
-      await enrollmentService.enroll({ course_id: courseId, payment_provider: 'simulated' });
-      toast.success('Course purchased successfully');
-      const myCoursesRes = await enrollmentService.getMyCourses();
-      setMyCourses(myCoursesRes.data || []);
+      await enrollmentService.enrollFree({ course_id: courseId });
+      toast.success('Test enrollment successful');
+      await refreshMyCourses();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Purchase failed');
+      toast.error(error.response?.data?.message || 'Enrollment failed');
+    }
+  };
+
+  const loadRazorpayScript = () =>
+    new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+
+  const handleRazorpayBuy = async (course) => {
+    try {
+      const ok = await loadRazorpayScript();
+      if (!ok) {
+        toast.error('Unable to load Razorpay checkout');
+        return;
+      }
+
+      const orderRes = await enrollmentService.createOrder({ course_id: course.id });
+      const order = orderRes.data;
+
+      const options = {
+        key: order.key_id,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'ForensIQ',
+        description: `Enrollment for ${course.title || course.name}`,
+        order_id: order.order_id,
+        handler: async function (response) {
+          try {
+            await enrollmentService.verifyPayment({
+              course_id: course.id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+            toast.success('Payment verified and enrollment completed');
+            await refreshMyCourses();
+          } catch (error) {
+            toast.error(error.response?.data?.message || 'Payment verification failed');
+          }
+        },
+        prefill: {
+          name: `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim(),
+          email: profile?.email || '',
+          contact: profile?.phone || ''
+        },
+        theme: { color: '#253347' }
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Payment initiation failed');
     }
   };
 
@@ -110,15 +158,13 @@ function DashboardPage() {
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
     try {
-      await authService.changePassword?.(passwordForm);
+      await authService.changePassword(passwordForm);
       toast.success('Password changed');
       setPasswordForm({ currentPassword: '', newPassword: '' });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Password change failed');
     }
   };
-
-  const lectureResources = resources.filter((item) => item.type === 'lecture');
 
   return (
     <section className="mt-8 grid gap-6 md:grid-cols-[220px_1fr]">
@@ -155,12 +201,12 @@ function DashboardPage() {
               <p className="mt-2 text-3xl font-bold text-primary">{myCourses.length}</p>
             </div>
             <div className="glass-card rounded-2xl p-5">
-              <p className="text-sm text-slate-500">Resources</p>
-              <p className="mt-2 text-3xl font-bold text-primary">{resources.length}</p>
+              <p className="text-sm text-slate-500">Available Courses</p>
+              <p className="mt-2 text-3xl font-bold text-primary">{courses.length}</p>
             </div>
             <div className="glass-card rounded-2xl p-5">
-              <p className="text-sm text-slate-500">Quizzes</p>
-              <p className="mt-2 text-3xl font-bold text-primary">{quizzes.length}</p>
+              <p className="text-sm text-slate-500">Resources</p>
+              <p className="mt-2 text-3xl font-bold text-primary">{resources.length}</p>
             </div>
             <div className="glass-card rounded-2xl p-5">
               <p className="text-sm text-slate-500">Notifications</p>
@@ -219,20 +265,31 @@ function DashboardPage() {
           </div>
         )}
 
-        {!loading && activeSection === 'Browse Courses' && (
+        {!loading && activeSection === 'Courses' && (
           <div className="grid gap-4 md:grid-cols-2">
             {courses.map((course) => (
               <article key={course.id} className="glass-card rounded-2xl p-5 shadow-glow">
                 <h3 className="text-lg font-semibold text-primary">{course.title || course.name}</h3>
                 <p className="mt-2 text-sm text-slate-600">{course.description}</p>
                 <p className="mt-3 text-base font-semibold text-slate-800">INR {Number(course.price || 0)}</p>
-                <button
-                  disabled={enrolledCourseIds.has(course.id)}
-                  onClick={() => handleEnroll(course.id)}
-                  className="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-                >
-                  {enrolledCourseIds.has(course.id) ? 'Purchased' : 'Buy Course'}
-                </button>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {Number(course.price || 0) > 0 && (
+                    <button
+                      disabled={enrolledCourseIds.has(course.id)}
+                      onClick={() => handleRazorpayBuy(course)}
+                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                    >
+                      {enrolledCourseIds.has(course.id) ? 'Enrolled' : 'Pay with Razorpay'}
+                    </button>
+                  )}
+                  <button
+                    disabled={enrolledCourseIds.has(course.id)}
+                    onClick={() => handleFreeBuy(course.id)}
+                    className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                  >
+                    {enrolledCourseIds.has(course.id) ? 'Enrolled' : 'Buy Free (Test)'}
+                  </button>
+                </div>
               </article>
             ))}
           </div>
@@ -248,7 +305,7 @@ function DashboardPage() {
                   to={`/dashboard/course/${entry.course?.id}`}
                   className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm text-white"
                 >
-                  View Lectures
+                  Open Course
                 </Link>
               </article>
             ))}
@@ -282,39 +339,6 @@ function DashboardPage() {
               </article>
             ))}
             {resources.length === 0 && <div className="glass-card rounded-2xl p-5">No resources available.</div>}
-          </div>
-        )}
-
-        {!loading && activeSection === 'Quizzes' && (
-          <div className="grid gap-4 md:grid-cols-2">
-            {quizzes.map((quiz) => (
-              <article key={quiz.id} className="glass-card rounded-2xl p-4 shadow-glow">
-                <h4 className="font-semibold text-primary">{quiz.title}</h4>
-                <p className="mt-1 text-sm text-slate-600">Timer: {quiz.timer_minutes} mins</p>
-                <p className="text-sm text-slate-600">Questions: {quiz.questions?.length || 0}</p>
-              </article>
-            ))}
-            {quizzes.length === 0 && <div className="glass-card rounded-2xl p-5">No quizzes available.</div>}
-          </div>
-        )}
-
-        {!loading && activeSection === 'Dashboard' && lectureResources.length > 0 && (
-          <div className="glass-card rounded-2xl p-5 shadow-glow">
-            <h3 className="text-lg font-semibold text-primary">Continue Learning</h3>
-            <div className="mt-3 flex flex-wrap gap-3">
-              {lectureResources.slice(0, 3).map((lecture) => (
-                <button
-                  key={lecture.id}
-                  onClick={async () => {
-                    await progressService.markCompleted({ resource_id: lecture.id });
-                    toast.success('Lecture marked as completed');
-                  }}
-                  className="rounded-lg border border-primary px-3 py-2 text-sm text-primary"
-                >
-                  {lecture.title}
-                </button>
-              ))}
-            </div>
           </div>
         )}
       </motion.div>

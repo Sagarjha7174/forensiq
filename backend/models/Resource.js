@@ -19,11 +19,12 @@ const Resource = sequelize.define(
     },
     course_id: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
-    class_id: {
+    order_index: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false,
+      defaultValue: 0
     },
     content_url: {
       type: DataTypes.STRING,

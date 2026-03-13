@@ -9,8 +9,7 @@ const generateToken = (user) => {
       id: user.id,
       email: user.email,
       role: user.role,
-      class_id: user.class_id,
-      course_id: user.course_id
+      class_id: user.class_id
     },
     process.env.JWT_SECRET,
     {
@@ -21,7 +20,7 @@ const generateToken = (user) => {
 
 exports.register = async (req, res) => {
   try {
-    const { first_name, last_name, email, phone, password, class_id, course_id } = req.body;
+    const { first_name, last_name, email, phone, password, class_id } = req.body;
 
     if (!first_name || !last_name || !email || !phone || !password || !class_id) {
       return res.status(400).json({ message: 'Missing required registration fields' });
@@ -41,7 +40,6 @@ exports.register = async (req, res) => {
       phone,
       password: hashedPassword,
       class_id,
-      course_id,
       role: 'student'
     });
 
@@ -57,7 +55,6 @@ exports.register = async (req, res) => {
         email: user.email,
         phone: user.phone,
         class_id: user.class_id,
-        course_id: user.course_id,
         role: user.role
       }
     });
@@ -92,7 +89,6 @@ exports.login = async (req, res) => {
         email: user.email,
         phone: user.phone,
         class_id: user.class_id,
-        course_id: user.course_id,
         role: user.role
       }
     });
@@ -119,7 +115,7 @@ exports.profile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { first_name, last_name, phone, class_id, course_id } = req.body;
+    const { first_name, last_name, phone, class_id } = req.body;
     const user = await User.findByPk(req.user.id);
 
     if (!user) {
@@ -130,8 +126,7 @@ exports.updateProfile = async (req, res) => {
       first_name: first_name ?? user.first_name,
       last_name: last_name ?? user.last_name,
       phone: phone ?? user.phone,
-      class_id: class_id ?? user.class_id,
-      course_id: course_id ?? user.course_id
+      class_id: class_id ?? user.class_id
     });
 
     return res.json({
@@ -143,7 +138,6 @@ exports.updateProfile = async (req, res) => {
         email: user.email,
         phone: user.phone,
         class_id: user.class_id,
-        course_id: user.course_id,
         role: user.role
       }
     });

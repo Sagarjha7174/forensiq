@@ -23,7 +23,7 @@ export const authService = {
 };
 
 export const courseService = {
-  getCourses: () => api.get('/courses'),
+  getCourses: (params) => api.get('/courses', { params }),
   createCourse: (payload) => api.post('/courses', payload),
   updateCourse: (id, payload) => api.put(`/courses/${id}`, payload),
   deleteCourse: (id) => api.delete(`/courses/${id}`),
@@ -36,7 +36,9 @@ export const classService = {
 };
 
 export const enrollmentService = {
-  enroll: (payload) => api.post('/enroll', payload),
+  createOrder: (payload) => api.post('/enroll/create-order', payload),
+  verifyPayment: (payload) => api.post('/enroll/verify', payload),
+  enrollFree: (payload) => api.post('/enroll/free', payload),
   getMyCourses: () => api.get('/my-courses')
 };
 
@@ -47,7 +49,13 @@ export const resourceService = {
 
 export const quizService = {
   getQuizzes: (params) => api.get('/quizzes', { params }),
-  createQuiz: (payload) => api.post('/quizzes', payload)
+  createQuiz: (payload) => api.post('/quizzes', payload),
+  deleteQuiz: (id) => api.delete(`/quizzes/${id}`)
+};
+
+export const quizAttemptService = {
+  submitAttempt: (payload) => api.post('/quiz-attempts/submit', payload),
+  getHistory: (params) => api.get('/quiz-attempts/history', { params })
 };
 
 export const progressService = {

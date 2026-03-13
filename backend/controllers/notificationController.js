@@ -1,5 +1,6 @@
 const Notification = require('../models/Notification');
 const { Op } = require('sequelize');
+const Enrollment = require('../models/Enrollment');
 
 exports.getNotifications = async (req, res) => {
   try {
@@ -7,12 +8,13 @@ exports.getNotifications = async (req, res) => {
 
     if (req.user && req.user.role !== 'admin') {
       const classId = req.user.class_id;
-      const courseId = req.user.course_id;
+      const enrollments = await Enrollment.findAll({ where: { user_id: req.user.id } });
+      const courseIds = enrollments.map((e) => e.course_id);
 
       where[Op.or] = [
         { class_id: null, course_id: null },
         { class_id: classId },
-        { course_id: courseId }
+        ...(courseIds.length ? [{ course_id: { [Op.in]: courseIds } }] : [])
       ];
     }
 

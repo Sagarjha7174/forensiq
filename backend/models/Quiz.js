@@ -15,11 +15,7 @@ const Quiz = sequelize.define(
     },
     course_id: {
       type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    class_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     timer_minutes: {
       type: DataTypes.INTEGER,
