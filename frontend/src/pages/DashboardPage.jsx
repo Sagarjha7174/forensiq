@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import {
+  Bell,
+  BookOpen,
+  LayoutDashboard,
+  Library,
+  Megaphone,
+  Shield,
+  UserCircle
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   authService,
@@ -10,8 +19,19 @@ import {
   resourceService
 } from '../services/api';
 import { getStoredUser, setAuthSession } from '../services/authStorage';
+import AnimatedButton from '../components/ui/AnimatedButton';
+import AnimatedCard from '../components/ui/AnimatedCard';
+import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 
 const sections = ['Dashboard', 'Profile', 'Courses', 'My Courses', 'Notifications', 'Resources'];
+const sectionIcons = {
+  Dashboard: LayoutDashboard,
+  Profile: UserCircle,
+  Courses: Library,
+  'My Courses': BookOpen,
+  Notifications: Bell,
+  Resources: Shield
+};
 
 function DashboardPage() {
   const [activeSection, setActiveSection] = useState('Dashboard');
@@ -168,18 +188,26 @@ function DashboardPage() {
 
   return (
     <section className="mt-8 grid gap-6 md:grid-cols-[220px_1fr]">
-      <aside className="glass-card h-fit rounded-2xl p-4 shadow-glow">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Student Panel</p>
+      <aside className="glass-card h-fit rounded-2xl p-4 shadow-glow md:sticky md:top-24">
+        <p className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">Student Panel</p>
         <div className="space-y-2">
           {sections.map((section) => (
             <button
               key={section}
               onClick={() => setActiveSection(section)}
               className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                activeSection === section ? 'bg-primary text-white' : 'bg-white/60 text-slate-700 hover:bg-slate-100'
+                activeSection === section
+                  ? 'bg-gradient-to-r from-primary to-secondary text-white'
+                  : 'bg-white/60 text-slate-700 hover:bg-slate-100 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800'
               }`}
             >
-              {section}
+              <span className="inline-flex items-center gap-2">
+                {(() => {
+                  const Icon = sectionIcons[section];
+                  return Icon ? <Icon size={14} /> : null;
+                })()}
+                {section}
+              </span>
             </button>
           ))}
         </div>
@@ -192,26 +220,26 @@ function DashboardPage() {
         transition={{ duration: 0.25 }}
         className="space-y-6"
       >
-        {loading && <div className="skeleton h-48" />}
+        {loading && <LoadingSkeleton rows={5} className="h-48" />}
 
         {!loading && activeSection === 'Dashboard' && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="glass-card rounded-2xl p-5">
-              <p className="text-sm text-slate-500">My Courses</p>
+            <AnimatedCard className="p-5">
+              <p className="text-sm text-slate-500 dark:text-slate-300">My Courses</p>
               <p className="mt-2 text-3xl font-bold text-primary">{myCourses.length}</p>
-            </div>
-            <div className="glass-card rounded-2xl p-5">
-              <p className="text-sm text-slate-500">Available Courses</p>
+            </AnimatedCard>
+            <AnimatedCard className="p-5" delay={0.03}>
+              <p className="text-sm text-slate-500 dark:text-slate-300">Available Courses</p>
               <p className="mt-2 text-3xl font-bold text-primary">{courses.length}</p>
-            </div>
-            <div className="glass-card rounded-2xl p-5">
-              <p className="text-sm text-slate-500">Resources</p>
+            </AnimatedCard>
+            <AnimatedCard className="p-5" delay={0.05}>
+              <p className="text-sm text-slate-500 dark:text-slate-300">Resources</p>
               <p className="mt-2 text-3xl font-bold text-primary">{resources.length}</p>
-            </div>
-            <div className="glass-card rounded-2xl p-5">
-              <p className="text-sm text-slate-500">Notifications</p>
+            </AnimatedCard>
+            <AnimatedCard className="p-5" delay={0.08}>
+              <p className="text-sm text-slate-500 dark:text-slate-300">Notifications</p>
               <p className="mt-2 text-3xl font-bold text-primary">{notifications.length}</p>
-            </div>
+            </AnimatedCard>
           </div>
         )}
 
@@ -221,24 +249,24 @@ function DashboardPage() {
               <h3 className="text-lg font-semibold text-primary">Edit Profile</h3>
               <div className="mt-4 grid gap-3">
                 <input
-                  className="rounded-lg border border-slate-300 px-3 py-2"
+                  className="input-glow rounded-lg border border-slate-300 px-3 py-2 outline-none"
                   value={profileForm.first_name}
                   onChange={(e) => setProfileForm((prev) => ({ ...prev, first_name: e.target.value }))}
                   placeholder="First name"
                 />
                 <input
-                  className="rounded-lg border border-slate-300 px-3 py-2"
+                  className="input-glow rounded-lg border border-slate-300 px-3 py-2 outline-none"
                   value={profileForm.last_name}
                   onChange={(e) => setProfileForm((prev) => ({ ...prev, last_name: e.target.value }))}
                   placeholder="Last name"
                 />
                 <input
-                  className="rounded-lg border border-slate-300 px-3 py-2"
+                  className="input-glow rounded-lg border border-slate-300 px-3 py-2 outline-none"
                   value={profileForm.phone}
                   onChange={(e) => setProfileForm((prev) => ({ ...prev, phone: e.target.value }))}
                   placeholder="Phone"
                 />
-                <button className="rounded-lg bg-accent px-4 py-2 text-white">Save Profile</button>
+                <AnimatedButton variant="accent">Save Profile</AnimatedButton>
               </div>
             </form>
 
@@ -247,19 +275,19 @@ function DashboardPage() {
               <div className="mt-4 grid gap-3">
                 <input
                   type="password"
-                  className="rounded-lg border border-slate-300 px-3 py-2"
+                  className="input-glow rounded-lg border border-slate-300 px-3 py-2 outline-none"
                   value={passwordForm.currentPassword}
                   onChange={(e) => setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))}
                   placeholder="Current password"
                 />
                 <input
                   type="password"
-                  className="rounded-lg border border-slate-300 px-3 py-2"
+                  className="input-glow rounded-lg border border-slate-300 px-3 py-2 outline-none"
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
                   placeholder="New password"
                 />
-                <button className="rounded-lg bg-primary px-4 py-2 text-white">Update Password</button>
+                <AnimatedButton>Update Password</AnimatedButton>
               </div>
             </form>
           </div>
@@ -268,29 +296,28 @@ function DashboardPage() {
         {!loading && activeSection === 'Courses' && (
           <div className="grid gap-4 md:grid-cols-2">
             {courses.map((course) => (
-              <article key={course.id} className="glass-card rounded-2xl p-5 shadow-glow">
+              <AnimatedCard key={course.id} className="p-5">
                 <h3 className="text-lg font-semibold text-primary">{course.title || course.name}</h3>
-                <p className="mt-2 text-sm text-slate-600">{course.description}</p>
-                <p className="mt-3 text-base font-semibold text-slate-800">INR {Number(course.price || 0)}</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{course.description}</p>
+                <p className="mt-3 text-base font-semibold text-slate-800 dark:text-slate-100">INR {Number(course.price || 0)}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {Number(course.price || 0) > 0 && (
-                    <button
+                    <AnimatedButton
                       disabled={enrolledCourseIds.has(course.id)}
                       onClick={() => handleRazorpayBuy(course)}
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                     >
                       {enrolledCourseIds.has(course.id) ? 'Enrolled' : 'Pay with Razorpay'}
-                    </button>
+                    </AnimatedButton>
                   )}
-                  <button
+                  <AnimatedButton
                     disabled={enrolledCourseIds.has(course.id)}
                     onClick={() => handleFreeBuy(course.id)}
-                    className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                    variant="accent"
                   >
                     {enrolledCourseIds.has(course.id) ? 'Enrolled' : 'Buy Free (Test)'}
-                  </button>
+                  </AnimatedButton>
                 </div>
-              </article>
+              </AnimatedCard>
             ))}
           </div>
         )}
@@ -298,37 +325,37 @@ function DashboardPage() {
         {!loading && activeSection === 'My Courses' && (
           <div className="grid gap-4 md:grid-cols-2">
             {myCourses.map((entry) => (
-              <article key={entry.id} className="glass-card rounded-2xl p-5 shadow-glow">
+              <AnimatedCard key={entry.id} className="p-5">
                 <h3 className="text-lg font-semibold text-primary">{entry.course?.name || entry.course?.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">Payment: {entry.payment_status}</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Payment: {entry.payment_status}</p>
                 <Link
                   to={`/dashboard/course/${entry.course?.id}`}
-                  className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm text-white"
+                  className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm text-white transition hover:bg-secondary"
                 >
                   Open Course
                 </Link>
-              </article>
+              </AnimatedCard>
             ))}
-            {myCourses.length === 0 && <div className="glass-card rounded-2xl p-6">No purchased courses yet.</div>}
+            {myCourses.length === 0 && <AnimatedCard className="p-6">No purchased courses yet.</AnimatedCard>}
           </div>
         )}
 
         {!loading && activeSection === 'Notifications' && (
           <div className="space-y-3">
             {notifications.map((item) => (
-              <article key={item.id} className="glass-card rounded-2xl p-4 shadow-glow">
+              <AnimatedCard key={item.id} className="p-4">
                 <h4 className="font-semibold text-primary">{item.title}</h4>
-                <p className="text-sm text-slate-600">{item.message}</p>
-              </article>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{item.message}</p>
+              </AnimatedCard>
             ))}
-            {notifications.length === 0 && <div className="glass-card rounded-2xl p-5">No notifications available.</div>}
+            {notifications.length === 0 && <AnimatedCard className="p-5">No notifications available.</AnimatedCard>}
           </div>
         )}
 
         {!loading && activeSection === 'Resources' && (
           <div className="grid gap-4 md:grid-cols-2">
             {resources.map((item) => (
-              <article key={item.id} className="glass-card rounded-2xl p-4 shadow-glow">
+              <AnimatedCard key={item.id} className="p-4">
                 <p className="text-xs uppercase tracking-wide text-accent">{item.type}</p>
                 <h4 className="mt-1 font-semibold text-primary">{item.title}</h4>
                 {item.content_url && (
@@ -336,9 +363,9 @@ function DashboardPage() {
                     Open Resource
                   </a>
                 )}
-              </article>
+              </AnimatedCard>
             ))}
-            {resources.length === 0 && <div className="glass-card rounded-2xl p-5">No resources available.</div>}
+            {resources.length === 0 && <AnimatedCard className="p-5">No resources available.</AnimatedCard>}
           </div>
         )}
       </motion.div>

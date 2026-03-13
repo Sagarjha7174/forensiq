@@ -1,5 +1,6 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import AnimatedCard from './ui/AnimatedCard';
 
 const team = [
   {
@@ -31,7 +32,7 @@ function TeamSlider() {
     >
       {team.map((member) => (
         <SwiperSlide key={member.name}>
-          <article className="glass-card rounded-2xl p-4 shadow-glow">
+          <AnimatedCard className="p-4">
             <img
               src={member.image}
               alt={member.name}
@@ -39,7 +40,7 @@ function TeamSlider() {
             />
             <h3 className="mt-4 text-lg font-semibold text-primary">{member.name}</h3>
             <p className="text-sm text-slate-600">{member.role}</p>
-          </article>
+          </AnimatedCard>
         </SwiperSlide>
       ))}
     </Swiper>

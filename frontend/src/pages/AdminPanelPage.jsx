@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import { ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   adminService,
@@ -9,6 +11,8 @@ import {
   resourceService,
   workshopService
 } from '../services/api';
+import AnimatedButton from '../components/ui/AnimatedButton';
+import AnimatedCard from '../components/ui/AnimatedCard';
 
 function AdminPanelPage() {
   const [stats, setStats] = useState(null);
@@ -207,13 +211,20 @@ function AdminPanelPage() {
 
   return (
     <section className="mt-8 space-y-6">
-      <h1 className="font-heading text-3xl text-primary">Admin Panel</h1>
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="inline-flex items-center gap-2 font-heading text-3xl text-primary"
+      >
+        <ShieldCheck size={26} />
+        Admin Panel
+      </motion.h1>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="glass-card rounded-2xl p-4"><p className="text-sm text-slate-500">Total Users</p><p className="text-2xl font-bold text-primary">{stats?.totalUsers || 0}</p></div>
-        <div className="glass-card rounded-2xl p-4"><p className="text-sm text-slate-500">Total Courses</p><p className="text-2xl font-bold text-primary">{stats?.totalCourses || 0}</p></div>
-        <div className="glass-card rounded-2xl p-4"><p className="text-sm text-slate-500">Enrollments</p><p className="text-2xl font-bold text-primary">{stats?.totalEnrollments || 0}</p></div>
-        <div className="glass-card rounded-2xl p-4"><p className="text-sm text-slate-500">Revenue</p><p className="text-2xl font-bold text-primary">INR {stats?.totalRevenue || 0}</p></div>
+        <AnimatedCard className="p-4" hover={false}><p className="text-sm text-slate-500">Total Users</p><p className="text-2xl font-bold text-primary">{stats?.totalUsers || 0}</p></AnimatedCard>
+        <AnimatedCard className="p-4" hover={false}><p className="text-sm text-slate-500">Total Courses</p><p className="text-2xl font-bold text-primary">{stats?.totalCourses || 0}</p></AnimatedCard>
+        <AnimatedCard className="p-4" hover={false}><p className="text-sm text-slate-500">Enrollments</p><p className="text-2xl font-bold text-primary">{stats?.totalEnrollments || 0}</p></AnimatedCard>
+        <AnimatedCard className="p-4" hover={false}><p className="text-sm text-slate-500">Revenue</p><p className="text-2xl font-bold text-primary">INR {stats?.totalRevenue || 0}</p></AnimatedCard>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -221,10 +232,10 @@ function AdminPanelPage() {
           <h2 className="text-lg font-semibold text-primary">Course Management</h2>
           <input value={courseForm.name} onChange={(e) => setCourseForm((p) => ({ ...p, name: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Course title" required />
           <div className="rounded-lg border p-3">
-            <p className="mb-2 text-sm font-medium text-slate-700">Assign Classes (multi-select)</p>
+            <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">Assign Classes (multi-select)</p>
             <div className="grid gap-2 md:grid-cols-2">
               {classes.map((item) => (
-                <label key={item.id} className="flex items-center gap-2 text-sm">
+                <label key={item.id} className="flex items-center gap-2 text-sm dark:text-slate-200">
                   <input
                     type="checkbox"
                     checked={courseForm.class_ids.includes(item.id)}
@@ -238,7 +249,7 @@ function AdminPanelPage() {
           <textarea value={courseForm.description} onChange={(e) => setCourseForm((p) => ({ ...p, description: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Description" required />
           <input type="number" value={courseForm.price} onChange={(e) => setCourseForm((p) => ({ ...p, price: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Price" required />
           <input value={courseForm.thumbnail} onChange={(e) => setCourseForm((p) => ({ ...p, thumbnail: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Thumbnail URL" />
-          <button className="rounded-lg bg-accent px-4 py-2 text-white">Create Course</button>
+          <AnimatedButton type="submit" variant="accent">Create Course</AnimatedButton>
         </form>
 
         <form onSubmit={createResource} className="glass-card rounded-2xl p-5 shadow-glow space-y-3">
@@ -256,7 +267,7 @@ function AdminPanelPage() {
           </select>
           <input type="number" value={resourceForm.order_index} onChange={(e) => setResourceForm((p) => ({ ...p, order_index: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Lecture order" />
           <input value={resourceForm.content_url} onChange={(e) => setResourceForm((p) => ({ ...p, content_url: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Content URL" />
-          <button className="rounded-lg bg-primary px-4 py-2 text-white">Add Resource</button>
+          <AnimatedButton type="submit">Add Resource</AnimatedButton>
         </form>
 
         <form onSubmit={createQuiz} className="glass-card rounded-2xl p-5 shadow-glow space-y-3">
@@ -267,7 +278,7 @@ function AdminPanelPage() {
             {courses.map((item) => <option key={item.id} value={item.id}>{item.name || item.title}</option>)}
           </select>
           {selectedCourse && (
-            <p className="rounded-lg bg-white/70 p-2 text-xs text-slate-600">
+            <p className="rounded-lg bg-white/70 p-2 text-xs text-slate-600 dark:bg-slate-900/80 dark:text-slate-300">
               Quiz will be visible in course: <span className="font-medium">{selectedCourse.name || selectedCourse.title}</span>
             </p>
           )}
@@ -275,7 +286,7 @@ function AdminPanelPage() {
           <textarea value={quizForm.question} onChange={(e) => setQuizForm((p) => ({ ...p, question: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Question" required />
           <input value={quizForm.options_csv} onChange={(e) => setQuizForm((p) => ({ ...p, options_csv: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Options comma-separated" required />
           <input value={quizForm.correct_option} onChange={(e) => setQuizForm((p) => ({ ...p, correct_option: e.target.value }))} className="w-full rounded-lg border px-3 py-2" placeholder="Correct option" required />
-          <button className="rounded-lg bg-accent px-4 py-2 text-white">Create Quiz</button>
+          <AnimatedButton type="submit" variant="accent">Create Quiz</AnimatedButton>
         </form>
 
         <form onSubmit={createNotification} className="glass-card rounded-2xl p-5 shadow-glow space-y-3">
@@ -290,7 +301,7 @@ function AdminPanelPage() {
             <option value="">Visible course (optional)</option>
             {courses.map((item) => <option key={item.id} value={item.id}>{item.name || item.title}</option>)}
           </select>
-          <button className="rounded-lg bg-primary px-4 py-2 text-white">Create Notification</button>
+          <AnimatedButton type="submit">Create Notification</AnimatedButton>
         </form>
 
         <form onSubmit={createWorkshop} className="glass-card rounded-2xl p-5 shadow-glow space-y-3 lg:col-span-2">
@@ -301,7 +312,7 @@ function AdminPanelPage() {
             <input value={workshopForm.image} onChange={(e) => setWorkshopForm((p) => ({ ...p, image: e.target.value }))} className="rounded-lg border px-3 py-2" placeholder="Image URL" required />
             <input value={workshopForm.description} onChange={(e) => setWorkshopForm((p) => ({ ...p, description: e.target.value }))} className="rounded-lg border px-3 py-2" placeholder="Description" required />
           </div>
-          <button className="rounded-lg bg-accent px-4 py-2 text-white">Create Workshop</button>
+          <AnimatedButton type="submit" variant="accent">Create Workshop</AnimatedButton>
         </form>
       </div>
 
@@ -310,10 +321,10 @@ function AdminPanelPage() {
           <h2 className="text-lg font-semibold text-primary">Existing Quizzes</h2>
           <div className="mt-3 space-y-2">
             {quizzes.slice(0, 10).map((item) => (
-              <div key={item.id} className="flex items-center justify-between rounded-lg bg-white/70 p-3 text-sm">
+              <div key={item.id} className="flex items-center justify-between rounded-lg bg-white/70 p-3 text-sm dark:bg-slate-900/80">
                 <div>
                   <p className="font-medium text-primary">{item.title}</p>
-                  <p className="text-slate-600">{item.course?.name || 'Course not found'}</p>
+                  <p className="text-slate-600 dark:text-slate-300">{item.course?.name || 'Course not found'}</p>
                 </div>
                 <button onClick={() => deleteQuiz(item.id)} className="rounded bg-rose-500 px-3 py-1 text-white">
                   Delete
@@ -326,9 +337,9 @@ function AdminPanelPage() {
           <h2 className="text-lg font-semibold text-primary">Recent Resources</h2>
           <div className="mt-3 space-y-2">
             {resources.slice(0, 6).map((item) => (
-              <div key={item.id} className="rounded-lg bg-white/70 p-3 text-sm">
+              <div key={item.id} className="rounded-lg bg-white/70 p-3 text-sm dark:bg-slate-900/80">
                 <p className="font-medium text-primary">{item.title}</p>
-                <p className="text-slate-600 uppercase">{item.type}</p>
+                <p className="text-slate-600 uppercase dark:text-slate-300">{item.type}</p>
               </div>
             ))}
           </div>
@@ -340,7 +351,7 @@ function AdminPanelPage() {
         <div className="mt-3 overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-500">
+              <tr className="text-left text-slate-500 dark:text-slate-300">
                 <th className="py-2">Name</th>
                 <th className="py-2">Email</th>
                 <th className="py-2">Role</th>
@@ -349,7 +360,7 @@ function AdminPanelPage() {
             </thead>
             <tbody>
               {users.map((item) => (
-                <tr key={item.id} className="border-t border-slate-200">
+                <tr key={item.id} className="border-t border-slate-200 dark:border-slate-700 dark:text-slate-200">
                   <td className="py-2">{item.first_name} {item.last_name}</td>
                   <td className="py-2">{item.email}</td>
                   <td className="py-2">{item.role}</td>

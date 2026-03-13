@@ -6,19 +6,27 @@ const useFetch = (fetchFn) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let mounted = true;
+
     const load = async () => {
       try {
         setLoading(true);
         const response = await fetchFn();
-        setData(response.data);
+        if (!mounted) return;
+        setData(response.data || []);
       } catch (err) {
+        if (!mounted) return;
         setError(err.response?.data?.message || 'Something went wrong');
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     load();
+
+    return () => {
+      mounted = false;
+    };
   }, [fetchFn]);
 
   return { data, loading, error };

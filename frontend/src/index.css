@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,7 +8,8 @@
   --primary: #0f2744;
   --secondary: #1e3a5f;
   --accent: #4f46e5;
-  --page: #f1f5f9;
+  --page: #eef5fb;
+  --ink: #0b1220;
 }
 
 * {
@@ -21,18 +24,55 @@ body,
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Manrope', sans-serif;
   background:
-    radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.16), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(78, 152, 255, 0.14), transparent 40%),
     radial-gradient(circle at 85% 20%, rgba(15, 39, 68, 0.16), transparent 35%),
-    linear-gradient(180deg, #f8fafc 0%, var(--page) 100%);
-  color: #0b1220;
+    linear-gradient(180deg, #f7fbff 0%, var(--page) 100%);
+  color: var(--ink);
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+html.dark body {
+  background:
+    radial-gradient(circle at 10% 12%, rgba(25, 90, 189, 0.26), transparent 40%),
+    radial-gradient(circle at 88% 20%, rgba(5, 23, 44, 0.48), transparent 34%),
+    linear-gradient(180deg, #030915 0%, #081224 55%, #0c1a31 100%);
+  color: #d9e8ff;
+}
+
+body,
+section,
+article,
+nav,
+header,
+footer,
+input,
+button,
+textarea,
+select {
+  transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Sora', sans-serif;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.58));
+  backdrop-filter: blur(14px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+}
+
+html.dark .glass-card {
+  background: linear-gradient(145deg, rgba(12, 23, 45, 0.9), rgba(9, 18, 35, 0.82));
+  border-color: rgba(104, 132, 173, 0.22);
+  box-shadow: 0 16px 38px rgba(2, 10, 21, 0.4);
 }
 
 .section-title {
@@ -45,4 +85,29 @@ body {
 
 .skeleton {
   @apply animate-pulse rounded-xl bg-slate-200;
+}
+
+.fancy-grid {
+  background-image:
+    linear-gradient(rgba(15, 39, 68, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 39, 68, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.floating {
+  animation: floating 4.4s ease-in-out infinite;
+}
+
+.input-glow:focus {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16), 0 0 40px rgba(79, 70, 229, 0.2);
+}
+
+@keyframes floating {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }

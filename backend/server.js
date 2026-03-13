@@ -124,7 +124,7 @@ LectureProgress.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Resource.hasMany(LectureProgress, { foreignKey: 'resource_id', as: 'progressRows' });
 LectureProgress.belongsTo(Resource, { foreignKey: 'resource_id', as: 'resource' });
 
-const seedData = async () => {
+const ensureCoreData = async () => {
   const classCount = await ClassModel.count();
   if (classCount === 0) {
     await ClassModel.bulkCreate([
@@ -135,6 +135,39 @@ const seedData = async () => {
     ]);
   }
 
+  const classes = await ClassModel.findAll({ order: [['id', 'ASC']] });
+  const defaultClassId = classes[0]?.id;
+  const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@forensiq.com';
+  const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'Admin@123';
+
+  if (!defaultClassId) return classes;
+
+  const adminUsers = await User.findAll({ where: { role: 'admin' }, order: [['id', 'ASC']] });
+
+  if (adminUsers.length === 0) {
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    await User.create({
+      first_name: 'Platform',
+      last_name: 'Admin',
+      email: adminEmail,
+      phone: '9000000000',
+      password: hashedPassword,
+      class_id: defaultClassId,
+      role: 'admin'
+    });
+    return classes;
+  }
+
+  const primaryAdmin = adminUsers[0];
+  if (!/^\$2[aby]\$/i.test(primaryAdmin.password || '')) {
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    await primaryAdmin.update({ password: hashedPassword });
+  }
+
+  return classes;
+};
+
+const seedData = async () => {
   const classes = await ClassModel.findAll({ order: [['id', 'ASC']] });
   const classByName = new Map(classes.map((item) => [item.name, item]));
   const pgClass = classByName.get('PG (Postgraduate)') || classes[0];
@@ -227,21 +260,6 @@ const seedData = async () => {
   }
 
   const firstCourse = await Course.findOne({ order: [['id', 'ASC']] });
-  const defaultClassId = classes[0]?.id;
-
-  const adminCount = await User.count({ where: { role: 'admin' } });
-  if (adminCount === 0 && defaultClassId) {
-    const hashedPassword = await bcrypt.hash('Admin@123', 10);
-    await User.create({
-      first_name: 'Platform',
-      last_name: 'Admin',
-      email: 'admin@forensiq.com',
-      phone: '9000000000',
-      password: hashedPassword,
-      class_id: defaultClassId,
-      role: 'admin'
-    });
-  }
 
   const resourceCount = await Resource.count();
   if (resourceCount === 0 && firstCourse) {
@@ -301,6 +319,7 @@ const startServer = async () => {
     }
 
     await sequelize.authenticate();
+    await ensureCoreData();
 
     const shouldSeed = process.env.SEED_ON_BOOT === 'true' || process.env.NODE_ENV !== 'production';
     if (shouldSeed) {

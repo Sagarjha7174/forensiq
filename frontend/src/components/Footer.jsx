@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
-    <footer className="mt-20 bg-primary text-slate-100">
+    <footer className="relative mt-20 overflow-hidden bg-primary text-slate-100 dark:bg-slate-950">
+      <div className="pointer-events-none absolute -top-20 right-10 h-52 w-52 rounded-full bg-cyan-300/25 blur-3xl dark:bg-cyan-500/20" />
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 md:px-6">
         <div>
           <h3 className="font-heading text-2xl">ForensIQ</h3>
@@ -26,7 +27,7 @@ function Footer() {
         </div>
         <div>
           <h4 className="font-semibold">Contact</h4>
-          <p className="mt-3 text-sm text-slate-300">support@forensiq.in</p>
+          <p className="mt-3 text-sm text-slate-300 dark:text-slate-400">support@forensiq.in</p>
           <p className="text-sm text-slate-300">+91 00000 00000</p>
         </div>
       </div>

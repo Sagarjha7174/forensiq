@@ -1,21 +1,25 @@
-import { motion } from 'framer-motion';
+import { ArrowUpRight } from 'lucide-react';
+import AnimatedButton from './ui/AnimatedButton';
+import AnimatedCard from './ui/AnimatedCard';
 
 function CourseCard({ course }) {
+  const title = course.title || course.name;
+
   return (
-    <motion.article
-      whileHover={{ y: -8 }}
-      transition={{ duration: 0.25 }}
-      className="glass-card overflow-hidden rounded-2xl shadow-glow"
-    >
-      <img src={course.image} alt={course.title} className="h-44 w-full object-cover" />
+    <AnimatedCard className="group overflow-hidden">
+      <img
+        src={course.image || course.thumbnail}
+        alt={title}
+        className="h-44 w-full object-cover transition duration-500 group-hover:scale-105"
+      />
       <div className="p-5">
-        <h3 className="text-lg font-semibold text-primary">{course.title}</h3>
-        <p className="mt-2 text-sm text-slate-600">{course.description}</p>
-        <button className="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700">
+        <h3 className="text-lg font-semibold text-primary">{title}</h3>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{course.description}</p>
+        <AnimatedButton variant="accent" className="mt-4" icon={ArrowUpRight}>
           Read More
-        </button>
+        </AnimatedButton>
       </div>
-    </motion.article>
+    </AnimatedCard>
   );
 }
 

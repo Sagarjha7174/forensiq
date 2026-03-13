@@ -1,10 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { BookOpen, Microscope, Users, School } from 'lucide-react';
+import { ArrowRight, BookOpen, Microscope, School, Sparkles, Users } from 'lucide-react';
 import SectionHeader from '../components/SectionHeader';
 import CourseCard from '../components/CourseCard';
 import OfferCard from '../components/OfferCard';
 import WorkshopCard from '../components/WorkshopCard';
+import AnimatedButton from '../components/ui/AnimatedButton';
+import LoadingSkeleton from '../components/ui/LoadingSkeleton';
+import ScrollReveal from '../components/ui/ScrollReveal';
 import useFetch from '../hooks/useFetch';
 import { courseService, workshopService } from '../services/api';
 
@@ -41,40 +44,53 @@ function LandingPage() {
         <title>ForensIQ | Explore Forensics & Cyber Security</title>
       </Helmet>
 
-      <section className="relative mt-8 overflow-hidden rounded-3xl bg-primary px-6 py-16 text-white md:px-12">
+      <section className="fancy-grid relative mt-8 overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-secondary to-[#14283f] px-6 py-16 text-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 md:px-12">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1600&q=80"
+            src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=2400&q=95"
             alt="Forensic lab"
-            className="h-full w-full object-cover opacity-30"
+            className="h-full w-full object-cover object-center opacity-30"
           />
         </div>
+        <motion.div
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute right-6 top-8 hidden rounded-full border border-white/30 bg-white/10 p-3 backdrop-blur md:block"
+        >
+          <Sparkles size={18} />
+        </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="relative max-w-3xl"
         >
-          <h1 className="font-heading text-4xl leading-tight md:text-6xl">
+          <h1 className="font-heading text-4xl leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)] md:text-6xl">
             Explore the Worlds of Forensics, Cyber Security, Psychology & Criminology
           </h1>
-          <p className="mt-4 text-lg text-slate-100">Empowering Minds, Unveiling Truths</p>
+          <p className="mt-4 text-lg text-slate-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.25)]">Empowering minds, unveiling truths, and shaping future investigators.</p>
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <AnimatedButton variant="accent" icon={ArrowRight}>
+              Start Learning
+            </AnimatedButton>
+            <AnimatedButton variant="ghost">Explore Workshops</AnimatedButton>
+          </div>
         </motion.div>
       </section>
 
-      <section className="mt-16">
+      <ScrollReveal className="mt-16">
         <SectionHeader
           title="Courses"
           subtitle="Premium CUET-focused programs crafted for conceptual depth and exam precision."
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {coursesState.loading && [1, 2, 3].map((i) => <div key={i} className="skeleton h-72" />)}
+          {coursesState.loading && [1, 2, 3].map((i) => <LoadingSkeleton key={i} rows={4} className="h-72" />)}
           {!coursesState.loading &&
             coursesState.data.map((course) => <CourseCard key={course.id} course={course} />)}
         </div>
-      </section>
+      </ScrollReveal>
 
-      <section className="mt-16">
+      <ScrollReveal className="mt-16" delay={0.08}>
         <SectionHeader
           title="What We Offer"
           subtitle="A complete ecosystem for curious minds stepping into investigative sciences."
@@ -84,19 +100,19 @@ function LandingPage() {
             <OfferCard key={offer.title} {...offer} />
           ))}
         </div>
-      </section>
+      </ScrollReveal>
 
-      <section className="mt-16">
+      <ScrollReveal className="mt-16" delay={0.1}>
         <SectionHeader
           title="Upcoming Workshops"
           subtitle="Interactive events and practical experiences that make learning unforgettable."
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {workshopsState.loading && [1, 2, 3].map((i) => <div key={i} className="skeleton h-72" />)}
+          {workshopsState.loading && [1, 2, 3].map((i) => <LoadingSkeleton key={i} rows={4} className="h-72" />)}
           {!workshopsState.loading &&
             workshopsState.data.map((workshop) => <WorkshopCard key={workshop.id} workshop={workshop} />)}
         </div>
-      </section>
+      </ScrollReveal>
     </>
   );
 }

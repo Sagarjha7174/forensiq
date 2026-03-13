@@ -6,7 +6,7 @@ function SectionHeader({ title, subtitle }) {
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.55, ease: 'easeOut' }}
       className="mb-8"
     >
       <h2 className="section-title">{title}</h2>
