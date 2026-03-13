@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { execSync } = require('child_process');
 const dotenv = require('dotenv');
 const sequelize = require('./config/db');
 
@@ -278,6 +279,17 @@ const seedData = async () => {
 
 const startServer = async () => {
   try {
+    const shouldRunMigrations = process.env.RUN_MIGRATIONS_ON_BOOT !== 'false';
+    if (shouldRunMigrations) {
+      console.log('Running database migrations...');
+      try {
+        execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+      } catch (migrationError) {
+        const stderr = migrationError?.stderr?.toString?.() || migrationError.message;
+        throw new Error(`Migration step failed: ${stderr}`);
+      }
+    }
+
     await sequelize.authenticate();
 
     const shouldSeed = process.env.SEED_ON_BOOT === 'true' || process.env.NODE_ENV !== 'production';
