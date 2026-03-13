@@ -283,7 +283,8 @@ const startServer = async () => {
     if (shouldRunMigrations) {
       console.log('Running database migrations...');
       try {
-        execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+        // Use node to invoke sequelize-cli directly to avoid executable permission issues on some hosts.
+        execSync('node ./node_modules/sequelize-cli/lib/sequelize db:migrate', { stdio: 'inherit' });
       } catch (migrationError) {
         const stderr = migrationError?.stderr?.toString?.() || migrationError.message;
         throw new Error(`Migration step failed: ${stderr}`);
