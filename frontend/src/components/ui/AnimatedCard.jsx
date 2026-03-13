@@ -7,8 +7,8 @@ function AnimatedCard({ children, className = '', delay = 0, hover = true }) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.45, delay }}
-      whileHover={hover ? { y: -7, rotateX: 2, rotateY: -1 } : undefined}
-      className={`glass-card rounded-2xl border border-white/35 shadow-glow dark:border-slate-700 ${className}`}
+      whileHover={hover ? { y: -6 } : undefined}
+      className={`glass-card rounded-2xl border border-slate-200/70 transition-all duration-300 hover:shadow-[0_24px_60px_rgba(34,211,238,0.14)] dark:border-slate-800/90 ${className}`}
       style={{ transformStyle: 'preserve-3d' }}
     >
       {children}

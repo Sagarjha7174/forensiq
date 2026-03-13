@@ -6,9 +6,11 @@ export default {
     extend: {
       colors: {
         primary: '#6366F1',
-        secondary: '#4F46E5',
+        secondary: '#8B5CF6',
         deep: '#312E81',
-        accent: '#8B5CF6',
+        accent: '#22D3EE',
+        surface: '#0F172A',
+        'surface-dark': '#020617',
         page: '#f8fafc',
         ink: '#1E293B',
         'ink-dark': '#E2E8F0'
@@ -18,9 +20,9 @@ export default {
         body: ['Manrope', 'sans-serif']
       },
       boxShadow: {
-        glow: '0 20px 45px rgba(99,102,241,0.18)',
-        'glow-strong': '0 10px 30px rgba(99,102,241,0.35)',
-        'glow-purple': '0 10px 30px rgba(139,92,246,0.35)'
+        glow: '0 18px 45px rgba(15,23,42,0.18)',
+        'glow-strong': '0 18px 48px rgba(99,102,241,0.28)',
+        'glow-purple': '0 18px 48px rgba(139,92,246,0.28)'
       }
     }
   },
