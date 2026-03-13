@@ -1,3 +1,4 @@
+const dns = require('dns');
 require('dotenv').config();
 
 const dbDialect = process.env.DB_DIALECT || 'postgres';
@@ -12,6 +13,10 @@ const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
 if (databaseUrl) {
   process.env.DATABASE_URL = databaseUrl;
 }
+const forceIpv4 = process.env.DB_FORCE_IPV4 !== 'false';
+if (forceIpv4) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const shouldUseSSL =
   process.env.DB_SSL === 'true' || Boolean(databaseUrl) || process.env.NODE_ENV === 'production';
 const dialectOptions = shouldUseSSL
@@ -19,9 +24,12 @@ const dialectOptions = shouldUseSSL
       ssl: {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false'
-      }
+      },
+      ...(forceIpv4 ? { family: 4 } : {})
     }
-  : undefined;
+  : forceIpv4
+    ? { family: 4 }
+    : undefined;
 
 module.exports = {
   development: {

@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const dns = require('dns');
 require('dotenv').config();
 
 const dbDialect = process.env.DB_DIALECT || 'postgres';
@@ -9,6 +10,10 @@ const dbName = process.env.DB_NAME || process.env.DB_DATABASE;
 const dbPort = Number(process.env.DB_PORT || (dbDialect === 'postgres' ? 5432 : 3306));
 const rawDatabaseUrl = process.env.DATABASE_URL;
 const databaseUrl = rawDatabaseUrl?.replace(/^postgresql:\/\//i, 'postgres://');
+const forceIpv4 = process.env.DB_FORCE_IPV4 !== 'false';
+if (forceIpv4) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const shouldUseSSL =
   process.env.DB_SSL === 'true' || Boolean(databaseUrl) || process.env.NODE_ENV === 'production';
 
@@ -24,7 +29,10 @@ const options = {
   port: dbPort,
   dialect: dbDialect,
   logging: false,
-  dialectOptions: sslConfig ? { ssl: sslConfig } : {},
+  dialectOptions: {
+    ...(sslConfig ? { ssl: sslConfig } : {}),
+    ...(forceIpv4 ? { family: 4 } : {})
+  },
   define: {
     timestamps: true
   }
