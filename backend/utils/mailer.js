@@ -61,7 +61,13 @@ const sendMailIfEnabled = async ({ to, subject, text, html }) => {
   }
 
   if (!isMailEnabled()) {
-    console.warn('Mail skipped: SMTP environment variables are missing.');
+    const missingVars = [];
+    if (!process.env.SMTP_HOST) missingVars.push('SMTP_HOST');
+    if (!process.env.SMTP_PORT) missingVars.push('SMTP_PORT');
+    if (!process.env.SMTP_USER) missingVars.push('SMTP_USER');
+    if (!process.env.SMTP_PASS) missingVars.push('SMTP_PASS');
+    if (!process.env.MAIL_FROM) missingVars.push('MAIL_FROM');
+    console.warn(`Mail skipped: Missing SMTP variables: ${missingVars.join(', ')}`);
     return { skipped: true };
   }
 
