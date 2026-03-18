@@ -7,9 +7,14 @@ const isMailEnabled = () => {
     process.env.SMTP_HOST &&
       process.env.SMTP_PORT &&
       process.env.SMTP_USER &&
-      process.env.SMTP_PASS &&
-      process.env.MAIL_FROM
+      process.env.SMTP_PASS
   );
+};
+
+const getFromAddress = () => {
+  const mailFrom = String(process.env.MAIL_FROM || '').trim();
+  const smtpUser = String(process.env.SMTP_USER || '').trim();
+  return mailFrom || smtpUser;
 };
 
 const getTransporter = () => {
@@ -66,7 +71,6 @@ const sendMailIfEnabled = async ({ to, subject, text, html }) => {
     if (!process.env.SMTP_PORT) missingVars.push('SMTP_PORT');
     if (!process.env.SMTP_USER) missingVars.push('SMTP_USER');
     if (!process.env.SMTP_PASS) missingVars.push('SMTP_PASS');
-    if (!process.env.MAIL_FROM) missingVars.push('MAIL_FROM');
     console.warn(`[MAIL] Skipped: Missing SMTP variables: ${missingVars.join(', ')}`);
     return { skipped: true };
   }
@@ -74,10 +78,11 @@ const sendMailIfEnabled = async ({ to, subject, text, html }) => {
   try {
     console.log(`[MAIL] Attempting to send email to: ${to}`);
     const mailer = getTransporter();
+    const fromAddress = getFromAddress();
     console.log('[MAIL] Transporter created successfully');
     
     const info = await mailer.sendMail({
-      from: process.env.MAIL_FROM,
+      from: fromAddress,
       to,
       subject,
       text,
