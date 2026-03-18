@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 
 let transporter;
 
+const MAILERSEND_API_URL = 'https://api.mailersend.com/v1/email';
+
 const isMailEnabled = () => {
   return Boolean(
     process.env.SMTP_HOST &&
@@ -11,10 +13,28 @@ const isMailEnabled = () => {
   );
 };
 
+const isMailerSendApiEnabled = () => {
+  return Boolean(String(process.env.MAILERSEND_API_KEY || '').trim());
+};
+
 const getFromAddress = () => {
   const mailFrom = String(process.env.MAIL_FROM || '').trim();
   const smtpUser = String(process.env.SMTP_USER || '').trim();
   return mailFrom || smtpUser;
+};
+
+const parseFromAddress = (fromAddress) => {
+  const match = fromAddress.match(/^\s*([^<]+?)\s*<([^>]+)>\s*$/);
+  if (match) {
+    return {
+      name: match[1].trim(),
+      email: match[2].trim()
+    };
+  }
+
+  return {
+    email: fromAddress.trim()
+  };
 };
 
 const getTransporter = () => {
@@ -59,10 +79,55 @@ const escapeHtml = (value) => {
     .replace(/'/g, '&#39;');
 };
 
+const sendViaMailerSendApi = async ({ to, subject, text, html }) => {
+  const apiKey = String(process.env.MAILERSEND_API_KEY || '').trim();
+  const fromAddress = getFromAddress();
+  const from = parseFromAddress(fromAddress);
+
+  if (!from.email) {
+    throw new Error('MAIL_FROM or SMTP_USER must provide a valid sender email for MailerSend API.');
+  }
+
+  const response = await fetch(MAILERSEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from,
+      to: [{ email: to }],
+      subject,
+      text,
+      html
+    })
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`MailerSend API failed (${response.status}): ${errorBody}`);
+  }
+
+  const messageId = response.headers.get('x-message-id') || null;
+  return { skipped: false, provider: 'mailersend-api', messageId };
+};
+
 const sendMailIfEnabled = async ({ to, subject, text, html }) => {
   if (!to) {
     console.warn('[MAIL] Skipped: recipient email is missing.');
     return { skipped: true };
+  }
+
+  if (isMailerSendApiEnabled()) {
+    try {
+      console.log(`[MAIL] Attempting MailerSend API send to: ${to}`);
+      const result = await sendViaMailerSendApi({ to, subject, text, html });
+      console.log(`[MAIL] SUCCESS: MailerSend API sent email to ${to}. MessageID: ${result.messageId || 'N/A'}`);
+      return result;
+    } catch (error) {
+      console.error(`[MAIL] ERROR via MailerSend API to ${to}: ${error.message}`);
+      throw error;
+    }
   }
 
   if (!isMailEnabled()) {
