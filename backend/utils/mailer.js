@@ -23,6 +23,16 @@ const getFromAddress = () => {
   return mailFrom || smtpUser;
 };
 
+const getMailerSendFromAddress = () => {
+  const mailerSendFrom = String(process.env.MAILERSEND_FROM || '').trim();
+  const smtpUser = String(process.env.SMTP_USER || '').trim();
+  const mailFrom = String(process.env.MAIL_FROM || '').trim();
+
+  // For MailerSend API, prefer explicitly configured MailerSend sender,
+  // then SMTP_USER (often the MailerSend identity), and use MAIL_FROM last.
+  return mailerSendFrom || smtpUser || mailFrom;
+};
+
 const parseFromAddress = (fromAddress) => {
   const match = fromAddress.match(/^\s*([^<]+?)\s*<([^>]+)>\s*$/);
   if (match) {
@@ -81,7 +91,7 @@ const escapeHtml = (value) => {
 
 const sendViaMailerSendApi = async ({ to, subject, text, html }) => {
   const apiKey = String(process.env.MAILERSEND_API_KEY || '').trim();
-  const fromAddress = getFromAddress();
+  const fromAddress = getMailerSendFromAddress();
   const from = parseFromAddress(fromAddress);
 
   if (!from.email) {
@@ -105,7 +115,7 @@ const sendViaMailerSendApi = async ({ to, subject, text, html }) => {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`MailerSend API failed (${response.status}): ${errorBody}`);
+    throw new Error(`MailerSend API failed (${response.status}) for from=${from.email}: ${errorBody}`);
   }
 
   const messageId = response.headers.get('x-message-id') || null;
