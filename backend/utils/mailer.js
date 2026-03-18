@@ -24,6 +24,7 @@ const getTransporter = () => {
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
     secure: String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true',
+    family: 4, // Force IPv4 to avoid ENETUNREACH errors on IPv6-disabled networks
     auth: {
       user: smtpUser,
       pass: smtpPass
