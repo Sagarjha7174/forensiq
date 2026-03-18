@@ -1,8 +1,28 @@
-# Gmail SMTP Setup (ForensIQ)
+# Email Setup (ForensIQ)
 
-This guide configures Gmail SMTP for purchase confirmation emails in the backend.
+This guide covers Azure Communication Services Email and Gmail SMTP for purchase confirmation emails in the backend.
 
-## 1) Important: Use App Password (not your normal Gmail password)
+## 1) Azure Communication Services Email (recommended for your current setup)
+
+If your Azure test code uses:
+- `new EmailClient(connectionString)`
+- `client.beginSend(...)`
+
+then configure backend with:
+
+```env
+AZURE_EMAIL_CONNECTION_STRING=endpoint=https://your-resource.communication.azure.com/;accesskey=your_access_key
+AZURE_EMAIL_SENDER=DoNotReply@your-verified-domain.com
+```
+
+Notes:
+- `AZURE_EMAIL_SENDER` must be a verified sender/domain in your Azure Communication Services Email resource.
+- Keep semicolons in the connection string as-is.
+- Backend now sends through Azure first when these two variables are set.
+
+## 2) Gmail SMTP (alternative)
+
+Important: Use App Password (not your normal Gmail password)
 
 Google blocks normal account passwords for SMTP in most cases.
 You should use a 16-character App Password.
@@ -18,7 +38,7 @@ You should use a 16-character App Password.
 
 Use this generated value as `SMTP_PASS`.
 
-## 2) Update backend environment file
+## 3) Update backend environment file
 
 Open `backend/.env` and set:
 
@@ -31,12 +51,25 @@ SMTP_PASS=your_16_char_app_password
 MAIL_FROM="ForensIQ <yourgmail@gmail.com>"
 ```
 
+If you already have a full SMTP connection string (for example from Azure), you can use this instead:
+
+```env
+SMTP_CONNECTION_STRING=smtp://username:password@smtp.office365.com:587
+MAIL_FROM="ForensIQ <your-verified-email@domain.com>"
+```
+
+Notes for Azure SMTP:
+- Use `smtp://` with port `587` for STARTTLS.
+- Use `smtps://` with port `465` for implicit TLS.
+- URL-encode special characters in username/password (for example `@` as `%40`).
+- `MAIL_FROM` should be an address allowed by your Azure/email provider tenant.
+
 Notes:
 - `SMTP_USER` should be your full Gmail address.
 - `MAIL_FROM` can be same Gmail address.
 - For port `587`, `SMTP_SECURE=false` is correct (STARTTLS).
 
-## 3) Restart backend
+## 4) Restart backend
 
 From project root:
 
@@ -45,14 +78,14 @@ cd backend
 npm run dev
 ```
 
-## 4) Verify it works
+## 5) Verify it works
 
 1. Complete a paid course purchase in the app.
 2. Payment verification endpoint runs:
    - `POST /api/enroll/verify`
 3. On success, backend sends confirmation mail to the logged-in user's email.
 
-## 5) Troubleshooting
+## 6) Troubleshooting
 
 ### "Invalid login" or auth failed
 - Make sure `SMTP_PASS` is App Password, not Gmail account password.
@@ -67,7 +100,7 @@ npm run dev
 - New Gmail accounts may rate-limit SMTP temporarily.
 - Wait and retry after a short time.
 
-## 6) Security tips
+## 7) Security tips
 
 - Never commit `.env` to git.
 - Rotate App Password if exposed.

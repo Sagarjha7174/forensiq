@@ -1,10 +1,78 @@
 const nodemailer = require('nodemailer');
 
 let transporter;
+let azureEmailClient;
 
 const MAILERSEND_API_URL = 'https://api.mailersend.com/v1/email';
 
+const getAzureEmailConnectionString = () => {
+  return String(process.env.AZURE_EMAIL_CONNECTION_STRING || '').trim();
+};
+
+const getAzureEmailSender = () => {
+  return String(process.env.AZURE_EMAIL_SENDER || '').trim();
+};
+
+const isAzureEmailEnabled = () => {
+  return Boolean(getAzureEmailConnectionString() && getAzureEmailSender());
+};
+
+const getAzureEmailClient = () => {
+  if (azureEmailClient) return azureEmailClient;
+
+  let EmailClient;
+  try {
+    ({ EmailClient } = require('@azure/communication-email'));
+  } catch (error) {
+    throw new Error(
+      'Missing package @azure/communication-email. Run npm install @azure/communication-email in backend.'
+    );
+  }
+
+  azureEmailClient = new EmailClient(getAzureEmailConnectionString());
+  return azureEmailClient;
+};
+
+const getSmtpConnectionString = () => {
+  return String(process.env.SMTP_CONNECTION_STRING || '').trim();
+};
+
+const parseSmtpConnectionString = () => {
+  const connectionString = getSmtpConnectionString();
+  if (!connectionString) return null;
+
+  try {
+    const parsed = new URL(connectionString);
+    const protocol = String(parsed.protocol || '').replace(':', '').toLowerCase();
+    const isSecure = protocol === 'smtps';
+    const secureQuery = parsed.searchParams.get('secure');
+
+    return {
+      host: parsed.hostname,
+      port: Number(parsed.port || (isSecure ? 465 : 587)),
+      secure:
+        typeof secureQuery === 'string'
+          ? secureQuery.toLowerCase() === 'true'
+          : isSecure,
+      auth: {
+        user: decodeURIComponent(parsed.username || ''),
+        pass: decodeURIComponent(parsed.password || '')
+      }
+    };
+  } catch (error) {
+    throw new Error('Invalid SMTP_CONNECTION_STRING format. Expected smtp://user:pass@host:port or smtps://...');
+  }
+};
+
 const isMailEnabled = () => {
+  if (isAzureEmailEnabled()) {
+    return true;
+  }
+
+  if (getSmtpConnectionString()) {
+    return true;
+  }
+
   return Boolean(
     process.env.SMTP_HOST &&
       process.env.SMTP_PORT &&
@@ -19,18 +87,22 @@ const isMailerSendApiEnabled = () => {
 
 const getFromAddress = () => {
   const mailFrom = String(process.env.MAIL_FROM || '').trim();
+  const smtpConnectionString = parseSmtpConnectionString();
+  const smtpConnectionUser = String(smtpConnectionString?.auth?.user || '').trim();
   const smtpUser = String(process.env.SMTP_USER || '').trim();
-  return mailFrom || smtpUser;
+  return mailFrom || smtpConnectionUser || smtpUser;
 };
 
 const getMailerSendFromAddress = () => {
   const mailerSendFrom = String(process.env.MAILERSEND_FROM || '').trim();
+  const smtpConnectionString = parseSmtpConnectionString();
+  const smtpConnectionUser = String(smtpConnectionString?.auth?.user || '').trim();
   const smtpUser = String(process.env.SMTP_USER || '').trim();
   const mailFrom = String(process.env.MAIL_FROM || '').trim();
 
   // For MailerSend API, prefer explicitly configured MailerSend sender,
   // then SMTP_USER (often the MailerSend identity), and use MAIL_FROM last.
-  return mailerSendFrom || smtpUser || mailFrom;
+  return mailerSendFrom || smtpConnectionUser || smtpUser || mailFrom;
 };
 
 const parseFromAddress = (fromAddress) => {
@@ -49,6 +121,21 @@ const parseFromAddress = (fromAddress) => {
 
 const getTransporter = () => {
   if (transporter) return transporter;
+
+  const parsedSmtpConnection = parseSmtpConnectionString();
+  if (parsedSmtpConnection) {
+    transporter = nodemailer.createTransport({
+      host: parsedSmtpConnection.host,
+      port: parsedSmtpConnection.port,
+      secure: parsedSmtpConnection.secure,
+      family: 4, // Force IPv4 to avoid ENETUNREACH errors on IPv6-disabled networks
+      connectionTimeout: 10000, // 10s connection timeout
+      socketTimeout: 10000, // 10s socket timeout
+      auth: parsedSmtpConnection.auth
+    });
+
+    return transporter;
+  }
 
   const smtpUser = String(process.env.SMTP_USER || '').trim();
   const smtpPass = String(process.env.SMTP_PASS || '')
@@ -122,10 +209,46 @@ const sendViaMailerSendApi = async ({ to, subject, text, html }) => {
   return { skipped: false, provider: 'mailersend-api', messageId };
 };
 
+const sendViaAzureEmail = async ({ to, subject, text, html }) => {
+  const senderAddress = getAzureEmailSender();
+  if (!senderAddress) {
+    throw new Error('AZURE_EMAIL_SENDER is required for Azure Communication Services Email.');
+  }
+
+  const client = getAzureEmailClient();
+  const poller = await client.beginSend({
+    senderAddress,
+    content: {
+      subject,
+      plainText: text,
+      html
+    },
+    recipients: {
+      to: [{ address: to }]
+    }
+  });
+
+  const result = await poller.pollUntilDone();
+  const messageId = result?.id || result?.messageId || null;
+  return { skipped: false, provider: 'azure-email', messageId };
+};
+
 const sendMailIfEnabled = async ({ to, subject, text, html }) => {
   if (!to) {
     console.warn('[MAIL] Skipped: recipient email is missing.');
     return { skipped: true };
+  }
+
+  if (isAzureEmailEnabled()) {
+    try {
+      console.log(`[MAIL] Attempting Azure Email send to: ${to}`);
+      const result = await sendViaAzureEmail({ to, subject, text, html });
+      console.log(`[MAIL] SUCCESS: Azure Email sent to ${to}. MessageID: ${result.messageId || 'N/A'}`);
+      return result;
+    } catch (error) {
+      console.error(`[MAIL] ERROR via Azure Email to ${to}: ${error.message}`);
+      throw error;
+    }
   }
 
   if (isMailerSendApiEnabled()) {
@@ -142,11 +265,15 @@ const sendMailIfEnabled = async ({ to, subject, text, html }) => {
 
   if (!isMailEnabled()) {
     const missingVars = [];
+    if (!process.env.AZURE_EMAIL_CONNECTION_STRING) missingVars.push('AZURE_EMAIL_CONNECTION_STRING');
+    if (!process.env.AZURE_EMAIL_SENDER) missingVars.push('AZURE_EMAIL_SENDER');
+    if (!process.env.SMTP_CONNECTION_STRING) missingVars.push('SMTP_CONNECTION_STRING');
     if (!process.env.SMTP_HOST) missingVars.push('SMTP_HOST');
     if (!process.env.SMTP_PORT) missingVars.push('SMTP_PORT');
     if (!process.env.SMTP_USER) missingVars.push('SMTP_USER');
     if (!process.env.SMTP_PASS) missingVars.push('SMTP_PASS');
-    console.warn(`[MAIL] Skipped: Missing SMTP variables: ${missingVars.join(', ')}`);
+    if (!process.env.MAILERSEND_API_KEY) missingVars.push('MAILERSEND_API_KEY');
+    console.warn(`[MAIL] Skipped: No enabled mail provider. Missing variables: ${missingVars.join(', ')}`);
     return { skipped: true };
   }
 
