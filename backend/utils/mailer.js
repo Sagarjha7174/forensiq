@@ -25,6 +25,8 @@ const getTransporter = () => {
     port: Number(process.env.SMTP_PORT),
     secure: String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true',
     family: 4, // Force IPv4 to avoid ENETUNREACH errors on IPv6-disabled networks
+    connectionTimeout: 10000, // 10s connection timeout
+    socketTimeout: 10000, // 10s socket timeout
     auth: {
       user: smtpUser,
       pass: smtpPass

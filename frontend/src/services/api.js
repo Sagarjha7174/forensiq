@@ -6,7 +6,8 @@ const normalizedApiUrl = /\/api\/?$/i.test(rawApiUrl)
   : `${rawApiUrl.replace(/\/$/, '')}/api`;
 
 const api = axios.create({
-  baseURL: normalizedApiUrl
+  baseURL: normalizedApiUrl,
+  timeout: 30000 // 30 second timeout for all requests
 });
 
 api.interceptors.request.use((config) => {
@@ -23,7 +24,7 @@ export const authService = {
   profile: () => api.get('/auth/profile'),
   updateProfile: (payload) => api.put('/auth/profile', payload),
   changePassword: (payload) => api.put('/auth/change-password', payload),
-  sendTestMail: () => api.post('/auth/test-mail')
+  sendTestMail: () => api.post('/auth/test-mail', {}, { timeout: 45000 }) // 45s timeout for email
 };
 
 export const courseService = {

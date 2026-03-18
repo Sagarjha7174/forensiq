@@ -69,7 +69,11 @@ function ProfilePage() {
       const response = await authService.sendTestMail();
       toast.success(response.data?.message || 'Test email sent');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to send test email');
+      if (error.code === 'ECONNABORTED') {
+        toast.error('Request timeout - backend is taking too long. Please try again.');
+      } else {
+        toast.error(error.response?.data?.message || 'Unable to send test email');
+      }
     } finally {
       setSendingTestMail(false);
     }

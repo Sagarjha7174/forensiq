@@ -259,7 +259,11 @@ function DashboardPage() {
       const response = await authService.sendTestMail();
       toast.success(response.data?.message || 'Test email sent');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Test email failed');
+      if (error.code === 'ECONNABORTED') {
+        toast.error('Request timeout - backend is taking too long. Please try again.');
+      } else {
+        toast.error(error.response?.data?.message || 'Test email failed');
+      }
     } finally {
       setSendingTestMail(false);
     }
