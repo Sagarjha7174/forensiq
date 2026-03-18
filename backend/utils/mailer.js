@@ -56,7 +56,7 @@ const escapeHtml = (value) => {
 
 const sendMailIfEnabled = async ({ to, subject, text, html }) => {
   if (!to) {
-    console.warn('Mail skipped: recipient email is missing.');
+    console.warn('[MAIL] Skipped: recipient email is missing.');
     return { skipped: true };
   }
 
@@ -67,21 +67,31 @@ const sendMailIfEnabled = async ({ to, subject, text, html }) => {
     if (!process.env.SMTP_USER) missingVars.push('SMTP_USER');
     if (!process.env.SMTP_PASS) missingVars.push('SMTP_PASS');
     if (!process.env.MAIL_FROM) missingVars.push('MAIL_FROM');
-    console.warn(`Mail skipped: Missing SMTP variables: ${missingVars.join(', ')}`);
+    console.warn(`[MAIL] Skipped: Missing SMTP variables: ${missingVars.join(', ')}`);
     return { skipped: true };
   }
 
-  const mailer = getTransporter();
-
-  await mailer.sendMail({
-    from: process.env.MAIL_FROM,
-    to,
-    subject,
-    text,
-    html
-  });
-
-  return { skipped: false };
+  try {
+    console.log(`[MAIL] Attempting to send email to: ${to}`);
+    const mailer = getTransporter();
+    console.log('[MAIL] Transporter created successfully');
+    
+    const info = await mailer.sendMail({
+      from: process.env.MAIL_FROM,
+      to,
+      subject,
+      text,
+      html
+    });
+    
+    console.log(`[MAIL] SUCCESS: Email sent. MessageID: ${info.messageId}`);
+    return { skipped: false, messageId: info.messageId };
+    
+  } catch (error) {
+    console.error(`[MAIL] ERROR sending to ${to}: ${error.message}`);
+    console.error('[MAIL] Full error:', error);
+    throw error; // Re-throw so controller can handle it
+  }
 };
 
 exports.sendCoursePurchaseEmail = async ({

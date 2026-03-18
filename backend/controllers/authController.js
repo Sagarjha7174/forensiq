@@ -47,12 +47,15 @@ exports.register = async (req, res) => {
     const token = generateToken(user);
 
     try {
+      console.log(`[AUTH] Sending welcome email to: ${user.email}`);
       await sendWelcomeEmail({
         to: user.email,
         fullName: `${user.first_name} ${user.last_name}`.trim()
       });
+      console.log(`[AUTH] Welcome email sent successfully to: ${user.email}`);
     } catch (mailError) {
-      console.error('Welcome email failed:', mailError.message);
+      console.error(`[AUTH] Welcome email failed for ${user.email}: ${mailError.message}`);
+      console.error('[AUTH] Error details:', mailError);
     }
 
     return res.status(201).json({
@@ -181,27 +184,38 @@ exports.changePassword = async (req, res) => {
 
 exports.sendTestMail = async (req, res) => {
   try {
+    console.log(`[TEST-MAIL] Request from user ID: ${req.user.id}`);
+    
     const user = await User.findByPk(req.user.id, {
       attributes: ['id', 'first_name', 'last_name', 'email']
     });
 
     if (!user) {
+      console.log(`[TEST-MAIL] User not found: ${req.user.id}`);
       return res.status(404).json({ message: 'User not found' });
     }
 
+    console.log(`[TEST-MAIL] Sending test email to: ${user.email}`);
+    
     const result = await sendTestEmail({
       to: user.email,
       fullName: `${user.first_name} ${user.last_name}`.trim()
     });
 
+    console.log(`[TEST-MAIL] Result: ${JSON.stringify(result)}`);
+
     if (result?.skipped) {
+      console.log('[TEST-MAIL] Email was skipped - SMTP not configured');
       return res.status(400).json({
         message: 'SMTP is not configured properly. Please check backend .env mail variables.'
       });
     }
 
+    console.log(`[TEST-MAIL] Successfully sent to: ${user.email}`);
     return res.json({ message: `Test email sent to ${user.email}` });
   } catch (error) {
+    console.error(`[TEST-MAIL] Error: ${error.message}`);
+    console.error('[TEST-MAIL] Full error:', error);
     return res.status(500).json({ message: 'Test email failed', error: error.message });
   }
 };

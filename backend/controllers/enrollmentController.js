@@ -90,6 +90,7 @@ exports.verifyPayment = async (req, res) => {
     }
 
     try {
+      console.log(`[ENROLLMENT] Sending purchase email to: ${user.email}`);
       await sendCoursePurchaseEmail({
         to: user.email,
         fullName: `${user.first_name} ${user.last_name}`.trim(),
@@ -99,8 +100,10 @@ exports.verifyPayment = async (req, res) => {
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id
       });
+      console.log(`[ENROLLMENT] Purchase email sent successfully to: ${user.email}`);
     } catch (mailError) {
-      console.error('Purchase email failed:', mailError.message);
+      console.error(`[ENROLLMENT] Purchase email failed for ${user.email}: ${mailError.message}`);
+      console.error('[ENROLLMENT] Error details:', mailError);
     }
 
     return res.status(201).json({ message: 'Payment verified. Enrolled successfully.', enrollment });
