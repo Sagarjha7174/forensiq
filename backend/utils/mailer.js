@@ -15,13 +15,18 @@ const isMailEnabled = () => {
 const getTransporter = () => {
   if (transporter) return transporter;
 
+  const smtpUser = String(process.env.SMTP_USER || '').trim();
+  const smtpPass = String(process.env.SMTP_PASS || '')
+    .replace(/\s+/g, '')
+    .trim();
+
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
     secure: String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true',
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      user: smtpUser,
+      pass: smtpPass
     }
   });
 

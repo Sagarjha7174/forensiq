@@ -52,6 +52,7 @@ function DashboardPage() {
   const [resources, setResources] = useState([]);
   const [workshops, setWorkshops] = useState([]);
   const [progressRows, setProgressRows] = useState([]);
+  const [sendingTestMail, setSendingTestMail] = useState(false);
 
   const user = getStoredUser();
 
@@ -249,6 +250,18 @@ function DashboardPage() {
       setPasswordForm({ currentPassword: '', newPassword: '' });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Password change failed');
+    }
+  };
+
+  const handleSendTestMail = async () => {
+    try {
+      setSendingTestMail(true);
+      const response = await authService.sendTestMail();
+      toast.success(response.data?.message || 'Test email sent');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Test email failed');
+    } finally {
+      setSendingTestMail(false);
     }
   };
 
@@ -568,7 +581,17 @@ function DashboardPage() {
             {!loading && activeSection === 'profile' && (
               <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
                 <AnimatedCard className="p-6">
-                  <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Profile Snapshot</h3>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Profile Snapshot</h3>
+                    <AnimatedButton
+                      type="button"
+                      variant="ghost"
+                      loading={sendingTestMail}
+                      onClick={handleSendTestMail}
+                    >
+                      Test Mail
+                    </AnimatedButton>
+                  </div>
                   <div className="mt-6 space-y-4 text-sm text-slate-600 dark:text-slate-300">
                     <div>
                       <p className="text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Name</p>
