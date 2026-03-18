@@ -12,6 +12,7 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 function ProfilePage() {
   const user = getStoredUser();
   const [loading, setLoading] = useState(true);
+  const [sendingTestMail, setSendingTestMail] = useState(false);
   const [profile, setProfile] = useState({ first_name: '', last_name: '', phone: '', email: '' });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' });
 
@@ -62,17 +63,39 @@ function ProfilePage() {
     }
   };
 
+  const handleSendTestMail = async () => {
+    try {
+      setSendingTestMail(true);
+      const response = await authService.sendTestMail();
+      toast.success(response.data?.message || 'Test email sent');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Unable to send test email');
+    } finally {
+      setSendingTestMail(false);
+    }
+  };
+
   return (
     <section className="mt-10 space-y-6">
       <Helmet>
         <title>ForensIQ | Profile</title>
       </Helmet>
 
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl bg-primary/10 p-2 text-primary dark:bg-slate-800 dark:text-slate-100">
-          <UserRound size={20} />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl bg-primary/10 p-2 text-primary dark:bg-slate-800 dark:text-slate-100">
+            <UserRound size={20} />
+          </div>
+          <h1 className="font-heading text-3xl text-primary dark:text-slate-100">My Profile</h1>
         </div>
-        <h1 className="font-heading text-3xl text-primary dark:text-slate-100">My Profile</h1>
+        <AnimatedButton
+          type="button"
+          variant="ghost"
+          loading={sendingTestMail}
+          onClick={handleSendTestMail}
+        >
+          Test Mail
+        </AnimatedButton>
       </div>
 
       {loading ? (

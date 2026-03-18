@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { sendTestEmail, sendWelcomeEmail } = require('../utils/mailer');
 require('dotenv').config();
 
 const generateToken = (user) => {
@@ -44,6 +45,15 @@ exports.register = async (req, res) => {
     });
 
     const token = generateToken(user);
+
+    try {
+      await sendWelcomeEmail({
+        to: user.email,
+        fullName: `${user.first_name} ${user.last_name}`.trim()
+      });
+    } catch (mailError) {
+      console.error('Welcome email failed:', mailError.message);
+    }
 
     return res.status(201).json({
       message: 'User registered successfully',
@@ -166,5 +176,32 @@ exports.changePassword = async (req, res) => {
     return res.json({ message: 'Password changed successfully' });
   } catch (error) {
     return res.status(500).json({ message: 'Unable to change password', error: error.message });
+  }
+};
+
+exports.sendTestMail = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: ['id', 'first_name', 'last_name', 'email']
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const result = await sendTestEmail({
+      to: user.email,
+      fullName: `${user.first_name} ${user.last_name}`.trim()
+    });
+
+    if (result?.skipped) {
+      return res.status(400).json({
+        message: 'SMTP is not configured properly. Please check backend .env mail variables.'
+      });
+    }
+
+    return res.json({ message: `Test email sent to ${user.email}` });
+  } catch (error) {
+    return res.status(500).json({ message: 'Test email failed', error: error.message });
   }
 };

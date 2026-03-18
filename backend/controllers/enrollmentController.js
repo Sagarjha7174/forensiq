@@ -3,6 +3,8 @@ const Razorpay = require('razorpay');
 const Enrollment = require('../models/Enrollment');
 const Course = require('../models/Course');
 const ClassModel = require('../models/ClassModel');
+const User = require('../models/User');
+const { sendCoursePurchaseEmail } = require('../utils/mailer');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
@@ -65,7 +67,10 @@ exports.verifyPayment = async (req, res) => {
     const course = await Course.findByPk(course_id);
     if (!course) return res.status(404).json({ message: 'Course not found' });
 
-    const [enrollment] = await Enrollment.findOrCreate({
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const [enrollment, created] = await Enrollment.findOrCreate({
       where: { user_id: req.user.id, course_id },
       defaults: {
         amount: course.price,
@@ -74,6 +79,29 @@ exports.verifyPayment = async (req, res) => {
         razorpay_payment_id
       }
     });
+
+    if (!created) {
+      await enrollment.update({
+        amount: course.price,
+        payment_status: 'paid',
+        razorpay_order_id,
+        razorpay_payment_id
+      });
+    }
+
+    try {
+      await sendCoursePurchaseEmail({
+        to: user.email,
+        fullName: `${user.first_name} ${user.last_name}`.trim(),
+        courseName: course.name,
+        courseDescription: course.description,
+        amount: course.price,
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id
+      });
+    } catch (mailError) {
+      console.error('Purchase email failed:', mailError.message);
+    }
 
     return res.status(201).json({ message: 'Payment verified. Enrolled successfully.', enrollment });
   } catch (error) {

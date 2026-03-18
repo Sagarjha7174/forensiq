@@ -22,7 +22,8 @@ export const authService = {
   login: (payload) => api.post('/auth/login', payload),
   profile: () => api.get('/auth/profile'),
   updateProfile: (payload) => api.put('/auth/profile', payload),
-  changePassword: (payload) => api.put('/auth/change-password', payload)
+  changePassword: (payload) => api.put('/auth/change-password', payload),
+  sendTestMail: () => api.post('/auth/test-mail')
 };
 
 export const courseService = {
